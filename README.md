@@ -2,8 +2,8 @@
 ## CS 445 Final Project
 ### << Semester, Year >>
 
-### Team: << team name >>
-<< List Team Members >>
+### Team: << Capybaras >>
+<< Brian Lu, Michelle Lu, Fatime Useini >>
 
 ## Getting Started
 <<One paragraph of project description goes here>>
