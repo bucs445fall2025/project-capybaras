@@ -1,42 +1,40 @@
-How will you use this application?
-For entertainment purposes. 
+How will you use this application?  
+For entertainment purposes.
 
-Where would the user be located physically when using this application?
+Where would the user be located physically when using this application?  
 Can be anywhere with internet.
 
-Where would the results be visible?
+Where would the results be visible?  
 On a website. 
 
-When will this application be used?
+When will this application be used?  
 Anytime the user wanna play. 
 
-When can the application fail?
+When can the application fail?  
 When there's no internet connection. 
 
-Who is my user?
+Who is my user?  
 Anyone that wants to play the game. 
 
-Who will deliver the inputs for the application?
+Who will deliver the inputs for the application?  
 The user via the keyboard and mouse. 
 
-Who will receive the outputs of the application?
+Who will receive the outputs of the application?  
 
 
-What do I know about this application?
+What do I know about this application?  
 
 
-What does this application need to do?
+What does this application need to do?  
 
 
-What are the components of this application?
+What are the components of this application?  
 
 
-What needs to happen next?
+What needs to happen next?  
 
 
-What must happen before the next step?
+What must happen before the next step?  
 
 
-What needs to be tracked?
-
-
+What needs to be tracked?  

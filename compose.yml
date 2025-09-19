@@ -1,0 +1,24 @@
+services:
+  app:
+    build: ./app
+    #volumes:
+    #working_dir:
+    #environment:
+    ports:
+      - "PLACEHOLDER:PLACEHOLDER"
+    depends_on:
+      - server
+
+  server:
+    build: ./server
+    #working_dir:
+    #environment:
+    #volumes:
+    ports:
+      - "PLACEHOLDER:PLACEHOLDER"
+    #depends_on:
+      #- db 
+    
+  #db:
+
+#volumes:
