@@ -9,9 +9,9 @@
 - Set up the Docker environment
 - Choosing the stack for the development
 
-
 ## Milestone Status (Pass/Fail)
 
+Pass
 
 ## Requested Changes
 
