@@ -33,7 +33,6 @@ To make this project successful, we would make sure to meet each milestones, mai
 
 ## **Test Environment:**
 We will probably manually test each feature implemented to catch the bugs... TBD
----
 
 # **Team Setup**
 
