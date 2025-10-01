@@ -6,6 +6,9 @@
 
 ## Requirements Attempted in next Sprint
 
+- Set up the Docker environment
+- Choosing the stack for the development
+
 
 ## Milestone Status (Pass/Fail)
 
