@@ -60,13 +60,11 @@ NA
 
 ### Planning
 
-<< Our team's detailed plan to complete the sprint >>
 Create a mock-up design of our website.
 
 ### Action Items
 
-<< A list of things that need to happen in our for our team to complete the sprint >>
-Communcation. 
+We will meet up and decide on the additional requirements that will go into our SRS. We will also work together on creating the architecture diagram. 
 
 ### Issues and Risks
 
@@ -74,4 +72,4 @@ Busy class schedule and assignment workload. We will allocate certain time frame
 
 ### Team Work Assignments
 
-<< A list of each team member and their works assignments for this sprint >>
+We will all work on the requirements and creating the diagrams together. 
