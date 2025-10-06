@@ -1,9 +1,7 @@
-version: "3.8"
-
 services:
   backend:
     build:
-      context: ./server    # <-- points to server folder with backend Dockerfile
+      context: ./server    
     container_name: backend
     ports:
       - "5000:5000"
@@ -14,10 +12,10 @@ services:
 
   frontend:
     build:
-      context: ./app       # <-- points to app folder with frontend Dockerfile
+      context: ./app       
     container_name: frontend
     ports:
-      - "3000:80"         # host port 3000 -> container port 80 (nginx serving React)
+      - "3000:80"        
     depends_on:
       - backend
 
