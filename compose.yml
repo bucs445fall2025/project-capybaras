@@ -1,24 +1,33 @@
+version: "3.8"
+
 services:
-  app:
-    build: ./app
-    #volumes:
-    #working_dir:
-    #environment:
+  backend:
+    build:
+      context: ./server    # <-- points to server folder with backend Dockerfile
+    container_name: backend
     ports:
-      - "PLACEHOLDER:PLACEHOLDER"
+      - "5000:5000"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/yourdbname
     depends_on:
-      - server
+      - mongo
 
-  server:
-    build: ./server
-    #working_dir:
-    #environment:
-    #volumes:
+  frontend:
+    build:
+      context: ./app       # <-- points to app folder with frontend Dockerfile
+    container_name: frontend
     ports:
-      - "PLACEHOLDER:PLACEHOLDER"
-    #depends_on:
-      #- db 
-    
-  #db:
+      - "3000:80"         # host port 3000 -> container port 80 (nginx serving React)
+    depends_on:
+      - backend
 
-#volumes:
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:

@@ -1,11 +1,13 @@
-FROM <BACKEND>
-WORKDIR /src/server
+FROM node:20-alpine
 
-COPY PLACEHOLDER
-RUN PLACEHOLDER
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
 
 COPY . .
 
-EXPOSE <PORT>
+EXPOSE 5000
 
-#CMD [<COMMANDS>]
+# Start the backend
+CMD ["npm", "start"]
