@@ -2,9 +2,9 @@
 
 *note: replace anything surrounded by << >> and **remove** the << >>*
 
-**Attended**: << record the team members in attendance (virtual counts as long as they are participating) >>
+**Attended**: Michelle Lu, Fatime Useini, Brian Lu
 
-**DATE**: << meeting date >>
+**DATE**: 10/06/2025
 
 ***
 
@@ -12,27 +12,30 @@
 
 ### SRS Sections Updated
 
-<< List any SRS sections that were updated in the last sprint >>
+- Team
+- Functional and non-functional requirements 
 
 ### User Story
 
 << Corresponding User Stories completed in this sprint >>
 
+
 ### Sprint Requirements Attempted
 
-<< The corresponding SRS requirement that the team completed in the last sprint >>
+In the last sprint, we filled out the functional and non-functional requirements in the SRS. 
 
 ### Completed Requirements
 
-<< The work that's been completed in this sprint >>
+- Set up front end and back end dockerfile
+- Chose the stacks for this project 
 
 ### Incomplete Requirements
 
-<< The work that has not been completed in this sprint. Be VERY detailed and specific regarding what isn't working and what needs to be completed >>
+We have set up the docker environment for both the front end and back end. However, we are not sure if we have set them up correctly since none of us had any previous experience with using docker. 
 
 ### The summary of the entire project
 
-<< A general overview of the entire project >>
+Creating a website that allows users to save and search for recipes. 
 
 ***
 
@@ -40,15 +43,16 @@
 
 ## Requirements Flex
 
-<< # >>/3 requirement flexes remaining
+3/3 requirement flexes remaining
 
 ## Technical Debt
 
-<< Any requirements from the previous sprint that are using a technical flex >>
+NA
 
 ### Requirement Target
 
-<< The corresponding SRS requirement that our team will be complete in next sprint >>
+- Have a total of 5 requirements in the SRS
+- Add a "Software Architecture Diagram section" in the SRS
 
 ### User Stories
 
@@ -57,14 +61,16 @@
 ### Planning
 
 << Our team's detailed plan to complete the sprint >>
+Create a mock-up design of our website.
 
 ### Action Items
 
 << A list of things that need to happen in our for our team to complete the sprint >>
+Communcation. 
 
 ### Issues and Risks
 
-<< A list of potential obstacles that could keep us from completing the sprint and what's being done about them >>
+Busy class schedule and assignment workload. We will allocate certain time frame to work on this project. 
 
 ### Team Work Assignments
 
