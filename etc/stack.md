@@ -8,7 +8,7 @@
 - **Nginx** → [nginx:latest](https://hub.docker.com/_/nginx) 
 
 ## **Database**
-- **PostgreSQL** → [postgres:15](https://hub.docker.com/_/postgres) 
+- **MongoDB** → [mongo:latest](https://hub.docker.com/_/mongo) 
  
 ## **Additional Dependencies**
 - Any other dependencies can be listed here, such as Celery, Node.js, or worker services.
