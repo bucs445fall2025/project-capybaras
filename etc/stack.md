@@ -2,7 +2,7 @@
 - **Node.js + Express** → [node:20-bookworm-slim](https://hub.docker.com/_/node)
 
 ## **Frontend**
-- **React** → [node:20-bookworm-slim](https://hub.docker.com/_/node)
+- **React** → [node:20-alpine](https://hub.docker.com/_/node)
   
 ## **Web Server**
 - **Nginx** → [nginx:latest](https://hub.docker.com/_/nginx) 
