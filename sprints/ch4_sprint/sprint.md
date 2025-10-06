@@ -1,7 +1,4 @@
 # Sprint Meeting Notes
-
-*note: replace anything surrounded by << >> and **remove** the << >>*
-
 **Attended**: Michelle Lu, Fatime Useini, Brian Lu
 
 **DATE**: 10/06/2025
