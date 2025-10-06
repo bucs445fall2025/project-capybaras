@@ -1,7 +1,9 @@
-FROM <FRONTEND>
+FROM node:20-alpine
+
 WORKDIR /src/app
 
-COPY PLACEHOLDER
+COPY 
+
 RUN PLACEHOLDER
 
 COPY . .
