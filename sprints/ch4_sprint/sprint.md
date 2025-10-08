@@ -14,8 +14,9 @@
 
 ### User Story
 
-<< Corresponding User Stories completed in this sprint >>
-
+- Want to save recipes that they like/want to try so they can find it again easier later.
+- User wants to search for specific recipes by name to meet their preferences. 
+- Want the storage to be adjustable as more recipes are added.
 
 ### Sprint Requirements Attempted
 
