@@ -14,9 +14,9 @@
 
 ### User Story
 
-- Want to save recipes that they like/want to try so they can find it again easier later.
-- User wants to search for specific recipes by name to meet their preferences. 
-- Want the storage to be adjustable as more recipes are added.
+- As a user, I want to search for specific recipes by name to meet my preferences.
+- As a user, I want to save recipes that I like/want to try so I can find it again easier later. 
+- As a user, I want the storage to be adjustable as more recipes are added.
 
 ### Sprint Requirements Attempted
 
@@ -54,7 +54,7 @@ NA
 
 ### User Stories
 
-<< Corresponding User Stories >>
+As a user, I want to see a preview of the website layout and design so that I can understand how the website will look like and its navigation. 
 
 ### Planning
 
