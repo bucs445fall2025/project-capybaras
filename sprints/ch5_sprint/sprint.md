@@ -17,15 +17,15 @@
 
 ### User Story
 
-A website layout and design so that the user can understand and navigate.
+As a user, I want a clean and easy-to-navigate recipe website layout, so that I can quickly find, save, and follow along recipes without confusion.
 
 ### Sprint Requirements Attempted
 
-- Create a mock-up design of our website.
+A website layout and design so that the user can understand and navigate.
 
 ### Completed Requirements
 
-- Created a user-friendly website layout in Figma for the browse, search, and saved recipes pages.
+Created a user-friendly website layout in Figma for the browse, search, and saved recipes pages.
 
 ### Incomplete Requirements
 
@@ -45,28 +45,30 @@ Creating a recipe website where users can search for, browse, and save recipes i
 
 ## Technical Debt
 
-<< Any requirements from the previous sprint that are using a technical flex >>
+n/a
 
 ### Requirement Target
 
-<< The corresponding SRS requirement that our team will be complete in next sprint >>
+Implement the user interface for recipe browsing and navigation on homepage according to design specifications. 
 
 ### User Stories
 
-<< Corresponding User Stories >>
+As an end user, I want the interface to match the Figma design, so that I can easily navigate and interact with the application.
 
 ### Planning
 
-<< Our team's detailed plan to complete the sprint >>
+- Complete the implementation of the UI according to the finalized Figma designs.
+- Create a responsive homepage with a search bar and easy navigation. 
 
 ### Action Items
 
-<< A list of things that need to happen in our for our team to complete the sprint >>
+- Update SRS Team Roles, Requirements, and Testing
+- User Interface Implementation
 
 ### Issues and Risks
 
-<< A list of potential obstacles that could keep us from completing the sprint and what's being done about them >>
+Busy class schedule and assignment workload. We will allocate certain time frame to work on this project.
 
 ### Team Work Assignments
 
-<< A list of each team member and their works assignments for this sprint >>
+We will work on action items together. 
