@@ -34,7 +34,7 @@ Creating a recipe website where users can search for, browse, and save recipes i
 
 ***
 
-## Sprint << 6 >> Planning
+## Sprint 6 Planning
 
 ## Requirements Flex
 
