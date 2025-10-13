@@ -2,41 +2,42 @@
 
 *note: replace anything surrounded by << >> and **remove** the << >>*
 
-**Attended**: << record the team members in attendance (virtual counts as long as they are participating) >>
+**Attended**: Michelle Lu, Fatime Useini, Brian Lu
 
-**DATE**: << meeting date >>
+**DATE**: 10/13/2025
 
 ***
 
-## Sprint << num >> Review
+## Sprint 5 Review
 
 ### SRS Sections Updated
 
-<< List any SRS sections that were updated in the last sprint >>
+- Added two requirements
+- Created the Architecture Diagram 
 
 ### User Story
 
-<< Corresponding User Stories completed in this sprint >>
+A website layout and design so that the user can understand and navigate.
 
 ### Sprint Requirements Attempted
 
-<< The corresponding SRS requirement that the team completed in the last sprint >>
+- Create a mock-up design of our website.
 
 ### Completed Requirements
 
-<< The work that's been completed in this sprint >>
+- Created a user-friendly website layout in Figma for the browse, search, and saved recipes pages.
 
 ### Incomplete Requirements
 
-<< The work that has not been completed in this sprint. Be VERY detailed and specific regarding what isn't working and what needs to be completed >>
+- n/a
 
 ### The summary of the entire project
 
-<< A general overview of the entire project >>
+Creating a recipe website where users can search for, browse, and save recipes in a visually engaging and user-friendly way. The platform allows users to browse a grid of recipe ideas, with images and recipe titles. Additionally, users can save recipes for easy access later and search/filter for specific recipes. 
 
 ***
 
-## Sprint << num >> Planning
+## Sprint << 6 >> Planning
 
 ## Requirements Flex
 
