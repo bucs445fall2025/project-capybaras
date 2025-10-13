@@ -1,7 +1,4 @@
 # Sprint Meeting Notes
-
-*note: replace anything surrounded by << >> and **remove** the << >>*
-
 **Attended**: Michelle Lu, Fatime Useini, Brian Lu
 
 **DATE**: 10/13/2025
@@ -41,7 +38,7 @@ Creating a recipe website where users can search for, browse, and save recipes i
 
 ## Requirements Flex
 
-<< # >>/5 requirement flexes remaining
+5/5 requirement flexes remaining
 
 ## Technical Debt
 
@@ -49,16 +46,18 @@ n/a
 
 ### Requirement Target
 
-Implement the user interface for recipe browsing and navigation on homepage according to design specifications. 
+Implement the basic homepage user interface with placeholder components like the search bar, saved button, etc. according to the Figma design specification. 
 
 ### User Stories
 
-As an end user, I want the interface to match the Figma design, so that I can easily navigate and interact with the application.
+As an end user, I want the homepage interface to match the Figma design, so that I can easily navigate the application.
+As an end user, I want to see a search bar on the homepage, so that I know where I can search for recipes.
 
 ### Planning
 
-- Complete the implementation of the UI according to the finalized Figma designs.
-- Create a responsive homepage with a search bar and easy navigation. 
+- Complete the implementation of the homepage UI according to the finalized Figma designs. 
+- A search bar component is visible on the homepage. 
+- The components doesn't have to be functional yet.
 
 ### Action Items
 
