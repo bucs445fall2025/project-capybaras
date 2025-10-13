@@ -1,7 +1,7 @@
 # Recipe Search
 
 ## **User Story**
-As a food enthusiast,
+As a user,
 I want to search for recipes by name, ingredient, or category,
 so that I can quickly find recipes that match what I want to cook.
 
