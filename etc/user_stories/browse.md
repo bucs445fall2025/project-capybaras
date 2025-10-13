@@ -1,4 +1,4 @@
-# Recipe Search
+# Browse
 
 ## **User Story**
 As a user,
