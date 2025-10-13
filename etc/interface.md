@@ -1,18 +1,18 @@
-class User
+class User:
     def saveRecipe():
         pass
 
     def createCollection():
         pass
 
-class RecipeCollection
+class RecipeCollection: 
     def addRecipe():
         pass
     
     def deleteRecipte():
         pass
 
-class Recipe
+class Recipe:
     def addLike():
         pass
 
