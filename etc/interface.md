@@ -1,8 +1,23 @@
-class Recipe 
-    Upload recipes 
+class User:
+    def saveRecipe():
+        pass
 
-class Search
-    Searcj function 
+    def createCollection():
+        pass
 
-class User 
-    save and delete recipes
+class RecipeCollection: 
+    def addRecipe():
+        pass
+    
+    def deleteRecipte():
+        pass
+
+class Recipe:
+    def addLike():
+        pass
+
+    def addReview():
+        pass
+
+    def info():
+        pass
