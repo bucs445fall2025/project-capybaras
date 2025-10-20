@@ -48,19 +48,21 @@ n/a
 
 ### Requirement Target
 
+Search functionality
 Save recipes to folders & likes function
 
 ### User Stories
-
+- As a user, I want to search for specific recipes by name to meet my preferences. 
 - As a user, I want to save recipes that I like/want to try so I can find it again easier later.
 - As a user, I want to be able to mark recipes as likes to easily save them into the likes folder. 
 
 ### Planning
 
-- Create a like button and save button on homepage and on recipe details page. Have the collections page update based on user actions. 
+- When a user searches for a specific recipe, related search results come up. Create a like button and save button on homepage and on recipe details page. Have the collections page update based on user actions. 
 
 ### Action Items
 
+- Implement the search bar functionality using dummy variables.
 - "Like" Button: A heart icon that changes state (filled) upon clicking.
 - "Save" Button: A button that triggers a dropdown for folder selection.
 - Collections Page: Update collections page based on user actions
