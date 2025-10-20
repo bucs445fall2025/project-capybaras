@@ -48,8 +48,8 @@ n/a
 
 ### Requirement Target
 
-Search functionality
-Save recipes to folders & likes function
+- Search functionality
+- Save recipes to folders & likes function
 
 ### User Stories
 - As a user, I want to search for specific recipes by name to meet my preferences. 

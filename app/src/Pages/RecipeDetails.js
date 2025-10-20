@@ -1,10 +1,6 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Header from './Components/Header';
-import RecipeCard from './Components/RecipeCard'; 
-import Collections from './Pages/Collections';
-import RecipeDetailPage from './Pages/RecipeDetails';
-import './Styles/App.css'; 
+import { useParams } from 'react-router-dom'; 
+import '../Styles/RecipeDetails.css'; 
 
 // Dummy data array for recipes
 const DUMMY_RECIPES = [
@@ -35,29 +31,58 @@ const DUMMY_RECIPES = [
   { id: 12, title: '', imageUrl: 'placeholder-12.jpg' },
 ];
 
-function HomePage() {
-  return (
-    <main className="recipe-grid-container">
-      {DUMMY_RECIPES.map((recipe) => (
-        <RecipeCard key={recipe.id} recipe={recipe} />
-      ))}
-    </main>
-  );
-}
+function RecipeDetailPage() {
+  const { recipeId } = useParams(); 
+  
+  const recipe = DUMMY_RECIPES.find(r => r.id.toString() === recipeId);
 
-function App() {
-  return (
-    <Router>
-      <div className="app-container">
-        <Header />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/collections" element={<Collections />} />
-          <Route path="/recipe/:recipeId" element={<RecipeDetailPage />} />
-        </Routes>
+  if (!recipe) {
+    return (
+      <div className="detail-container" style={{ textAlign: 'center' }}>
+        <h1 className="detail-title">Recipe Not Found</h1>
+        <p>The requested recipe ID: {recipeId} does not exist.</p>
       </div>
-    </Router>
+    );
+  }
+
+  return (
+    <div className="detail-container">
+      
+      {/* 1. Header and Image */}
+      <h1 className="detail-title">
+        {recipe.title}
+      </h1>
+      <img 
+        src={recipe.imageUrl} 
+        alt={recipe.title} 
+        className="detail-image"
+      />
+      
+      {/* 2. Description and Time Info */}
+      <p className="detail-description">
+        {recipe.description}
+      </p>
+      
+      <div className="detail-meta-box">
+        {recipe.prepTime && 
+          <p style={{ margin: 0 }}><strong>⏱️ Prep Time:</strong> {recipe.prepTime}</p>}
+        {recipe.cookTime && 
+          <p style={{ margin: 0 }}><strong>🔥 Cook Time:</strong> {recipe.cookTime}</p>}
+      </div>
+      
+      {/* 3. Ingredients List */}
+      {recipe.ingredients && recipe.ingredients.length > 0 && (
+        <>
+          <h3 className="detail-ingredients-heading">Ingredients</h3>
+          <ul className="detail-ingredients-list">
+            {recipe.ingredients.map((item, index) => (
+              <li key={index}>{item}</li>
+            ))}
+          </ul>
+        </>
+      )}
+    </div>
   );
 }
 
-export default App;
+export default RecipeDetailPage;
