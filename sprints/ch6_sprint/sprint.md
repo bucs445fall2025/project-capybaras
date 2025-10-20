@@ -1,14 +1,12 @@
 # Sprint Meeting Notes
 
-*note: replace anything surrounded by << >> and **remove** the << >>*
-
 **Attended**: << Brian Lu, Michelle Lu, Fatime Useini >>
 
-**DATE**: << 10/20/25 >>
+**DATE**: 10/20/25 
 
 ***
 
-## Sprint << 5 >> Review
+## Sprint 5 Review
 
 ### SRS Sections Updated
 
@@ -38,11 +36,11 @@ Creating a recipe website where users can search for, browse, and save recipes i
 
 ***
 
-## Sprint << 6 >> Planning
+## Sprint 6 Planning
 
 ## Requirements Flex
 
-<< # >>/5 requirement flexes remaining
+5/5 requirement flexes remaining
 
 ## Technical Debt
 
