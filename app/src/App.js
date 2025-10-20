@@ -1,6 +1,8 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './Components/Header';
 import RecipeCard from './Components/RecipeCard'; 
+import Collections from './Pages/Collections';
 import './Styles/App.css'; 
 
 // Dummy data array for recipes
@@ -19,20 +21,27 @@ const DUMMY_RECIPES = [
   { id: 12, title: '', imageUrl: 'placeholder-12.jpg' },
 ];
 
+function HomePage() {
+  return (
+    <main className="recipe-grid-container">
+      {DUMMY_RECIPES.map((recipe) => (
+        <RecipeCard key={recipe.id} recipe={recipe} />
+      ))}
+    </main>
+  );
+}
+
 function App() {
   return (
-    <div className="app-container">
-      <Header />
-      
-      {/* Container for the recipe cards */}
-      <main className="recipe-grid-container">
-        {
-          DUMMY_RECIPES.map((recipe) => (
-            <RecipeCard key={recipe.id} recipe={recipe} />
-          ))
-        }
-      </main>
-    </div>
+    <Router>
+      <div className="app-container">
+        <Header />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/collections" element={<Collections />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
