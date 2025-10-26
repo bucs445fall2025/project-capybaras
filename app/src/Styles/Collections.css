@@ -1,88 +1,22 @@
 .collections-page {
-  display: flex; 
+  display: flex;
   min-height: 80vh;
   font-family: Arial, sans-serif;
 }
 
-/* left-hand side: folders */
-.sidebar {
-  width: 250px; 
-  background-color: #f5f5f5;
-  padding: 20px;
-  border-right: 1px solid #ddd;
-}
-
-.folders-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.add-folder-btn {
-  background-color: #e0e0e0;
-  border: none;
-  border-radius: 50%;
-  width: 28px;
-  height: 28px;
-  font-size: 20px;
-  line-height: 20px;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.add-folder-btn:hover {
-  background-color: #d0d0d0;
-}
-
-.add-folder-input {
-  margin-bottom: 15px;
-}
-
-.add-folder-input input {
-  width: 100%;
-  padding: 6px;
-  margin-bottom: 6px;
-}
-
-.add-folder-input button {
-  width: 100%;
-  padding: 6px;
-  background-color: #ddd;
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-}
-
-.sidebar li {
-  padding: 10px;
-  margin-bottom: 5px;
-  border-radius: 6px;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.sidebar li.active {
-  background-color: #ddd;
-  font-weight: bold;
-}
-
-/* right-hand side: recipes in folder */
+/* Right-hand side: recipes in folder */
 .folder-content {
-  flex: 1; 
+  flex: 1;
   padding: 20px;
 }
 
 .folder-content h2 {
   font-size: 24px;
   margin-bottom: 15px;
+}
+
+.recipe-grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
 }
