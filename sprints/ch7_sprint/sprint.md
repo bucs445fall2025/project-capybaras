@@ -1,14 +1,12 @@
 # Sprint Meeting Notes
 
-*note: replace anything surrounded by << >> and **remove** the << >>*
-
 **Attended**: Brian Lu, Michelle Lu, Fatime Useini
 
 **DATE**: << Monday, October 27th >>
 
 ***
 
-## Sprint << 6 >> Review
+## Sprint 6 Review
 
 ### SRS Sections Updated
 
@@ -37,11 +35,11 @@ Creating a recipe website where users can search for, browse, and save recipes i
 
 ***
 
-## Sprint << 7 >> Planning
+## Sprint 7 Planning
 
 ## Requirements Flex
 
-<< # >>/5 requirement flexes remaining
+5/5 requirement flexes remaining
 
 ## Technical Debt
 
@@ -49,11 +47,12 @@ n/a
 
 ### Requirement Target
 
-Connect backend route handlers to front end functions so we can push and pull recipes from database. 
+- Set up backend and mongoDB
+- Connect backend route handlers to front end functions so we can push and pull recipes from database. 
 
 ### User Stories
 
- As a user, I want the storage to be adjustable as more recipes are added.
+As a user, I want to save a recipe to a folder, so it is stored in the database for future access.
 
 ### Planning
 
@@ -61,8 +60,9 @@ Our team will build backend routes and connect them to the database and frontend
 
 ### Action Items
 
+- Set up backend
+- Set up mongoDB
 - Build backend recipe routes
-- Replace DUMMY_RECIPES with data from backend
 
 ### Issues and Risks
 
