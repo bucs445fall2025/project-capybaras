@@ -2,7 +2,7 @@
 
 **Attended**: Brian Lu, Michelle Lu, Fatime Useini
 
-**DATE**: << Monday, October 27th >>
+**DATE**: Monday, October 27th
 
 ***
 
