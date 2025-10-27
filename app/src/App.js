@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './Components/Header';
 import RecipeCard from './Components/RecipeCard'; 
@@ -35,24 +35,97 @@ const DUMMY_RECIPES = [
   { id: 12, title: '', imageUrl: 'placeholder-12.jpg' },
 ];
 
-function HomePage() {
+function HomePage({ onLike, onSave, likedRecipes, folders }) {
   return (
     <main className="recipe-grid-container">
       {DUMMY_RECIPES.map((recipe) => (
-        <RecipeCard key={recipe.id} recipe={recipe} />
+        <RecipeCard 
+          key={recipe.id} 
+          recipe={recipe} 
+          onLike={onLike} 
+          onSave={onSave}
+          liked={likedRecipes.some(r => r.id === recipe.id)}
+          folders={folders}
+        />
       ))}
     </main>
   );
 }
 
 function App() {
+  const [folders, setFolders] = useState([
+    { id: 1, name: 'Likes', recipes: [] },
+    { id: 2, name: 'Quick Meals', recipes: [] },
+    { id: 3, name: 'Italian', recipes: [] },
+  ]);
+  
+  const [likedRecipes, setLikedRecipes] = useState([]);
+  const [selectedFolderId, setSelectedFolderId] = useState(1);
+
+  const handleLike = (recipe) => {
+    setLikedRecipes(prev => {
+      const alreadyLiked = prev.find(r => r.id === recipe.id);
+      if (alreadyLiked) {
+        setFolders(f => f.map(folder =>
+          folder.id === 1
+            ? { ...folder, recipes: folder.recipes.filter(r => r.id !== recipe.id) }
+            : folder
+        ));
+        return prev.filter(r => r.id !== recipe.id);
+      } 
+      else {
+        setFolders(f => f.map(folder =>
+          folder.id === 1
+            ? { ...folder, recipes: [...folder.recipes, recipe] }
+            : folder
+        ));
+        return [...prev, recipe];
+      }
+    });
+  };
+
+  const handleSave = (recipe, folderId) => {
+    setFolders(prev => {
+      return prev.map(folder => {
+        if (folder.id === folderId) {
+          const isAlreadySaved = folder.recipes.some(r => r.id === recipe.id);
+          if (!isAlreadySaved) {
+            return { ...folder, recipes: [...folder.recipes, recipe] };
+          }
+        }
+        return folder;
+      });
+    });
+  };
+
   return (
     <Router>
       <div className="app-container">
         <Header />
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/collections" element={<Collections />} />
+          <Route path="/" 
+            element={
+              <HomePage 
+                onLike={handleLike} 
+                onSave={handleSave} 
+                likedRecipes={likedRecipes} 
+                folders={folders} 
+                />
+              } 
+            />
+          <Route path="/collections" 
+            element={
+              <Collections 
+                folders={folders} 
+                setFolders={setFolders}
+                selectedFolderId={selectedFolderId}
+                setSelectedFolderId={setSelectedFolderId}
+                onLike={handleLike}
+                onSave={handleSave}
+                likedRecipes={likedRecipes} 
+              />
+            } 
+          />
           <Route path="/recipe/:recipeId" element={<RecipeDetailPage />} />
         </Routes>
       </div>
