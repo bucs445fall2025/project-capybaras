@@ -37,7 +37,7 @@ Creating a recipe website where users can search for, browse, and save recipes i
 
 ***
 
-## Sprint << num >> Planning
+## Sprint << 7 >> Planning
 
 ## Requirements Flex
 
@@ -49,19 +49,20 @@ n/a
 
 ### Requirement Target
 
-<< The corresponding SRS requirement that our team will be complete in next sprint >>
+Connect backend route handlers to front end functions so we can push and pull recipes from database. 
 
 ### User Stories
 
-<< Corresponding User Stories >>
+ As a user, I want the storage to be adjustable as more recipes are added.
 
 ### Planning
 
-<< Our team's detailed plan to complete the sprint >>
+Our team will build backend routes and connect them to the database and frontend so that recipe data transfers properly between user actions and stored data.
 
 ### Action Items
 
-<< A list of things that need to happen in our for our team to complete the sprint >>
+- Build backend recipe routes
+- Replace DUMMY_RECIPES with data from backend
 
 ### Issues and Risks
 
