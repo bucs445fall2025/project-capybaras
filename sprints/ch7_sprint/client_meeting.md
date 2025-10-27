@@ -2,15 +2,19 @@
 
 ## SRS Section(s)Updated
 
+- Interfaces
 
 ## Requirements Attempted in this Sprint
 
+- Bookmark Management
 
 ## Requirements complete
 
+- Bookmark Management
 
 ## Requirements incomplete
 
+- N/A
 
 ## Requirement Flex Remaining
 
@@ -18,9 +22,12 @@
 
 ## Requirements Attempted in next Sprint
 
+- Permanent Storage
+  - Connect to Database 
 
 ## Milestone Status
 
+- Pass
 
 ## Requested Changes
 
