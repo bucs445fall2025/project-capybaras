@@ -3,7 +3,7 @@ import '../Styles/Collections.css';
 import RecipeCard from '../Components/RecipeCard';
 import FolderList from '../Components/FolderList';
 
-function Collections({ folders, setFolders, selectedFolderId, setSelectedFolderId, onSave, likedRecipes, onLike }) {
+function Collections({ folders, setFolders, selectedFolderId, setSelectedFolderId, onSave, likedRecipes, onLike, onDeleteRecipe }) {
   const selectedFolder = folders.find(f => f.id === selectedFolderId);
 
   return (
@@ -29,6 +29,8 @@ function Collections({ folders, setFolders, selectedFolderId, setSelectedFolderI
                     onSave={onSave}
                     onLike={onLike}
                     folders={folders}
+                    currentFolderId={selectedFolderId} 
+                    onDeleteRecipe={onDeleteRecipe}
                   />
                 ))}
               </div>

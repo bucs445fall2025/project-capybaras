@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import '../Styles/Header.css';
 
-function Header() {
+function Header({ searchTerm, setSearchTerm }) {
   const location = useLocation();
 
   const pageTitles = {
@@ -25,7 +25,8 @@ function Header() {
       </div>
 
       <div className="header-center">
-        <input type="text" className="search-input" placeholder="Search" />
+        <input type="text" className="search-input" placeholder="Search" value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}/>
       </div>
       
       <div className="header-right">

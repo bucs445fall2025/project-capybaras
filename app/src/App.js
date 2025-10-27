@@ -35,22 +35,31 @@ const DUMMY_RECIPES = [
   { id: 12, title: '', imageUrl: 'placeholder-12.jpg' },
 ];
 
-function HomePage({ onLike, onSave, likedRecipes, folders }) {
+function HomePage({ onLike, onSave, likedRecipes, folders, searchTerm }) {
+  const filteredRecipes = DUMMY_RECIPES.filter(recipe => recipe.title &&
+    recipe.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <main className="recipe-grid-container">
-      {DUMMY_RECIPES.map((recipe) => (
-        <RecipeCard 
-          key={recipe.id} 
-          recipe={recipe} 
-          onLike={onLike} 
-          onSave={onSave}
-          liked={likedRecipes.some(r => r.id === recipe.id)}
-          folders={folders}
-        />
-      ))}
+      {filteredRecipes.length > 0 ? (
+        filteredRecipes.map((recipe) => (
+          <RecipeCard
+            key={recipe.id}
+            recipe={recipe}
+            onLike={onLike}
+            onSave={onSave}
+            liked={likedRecipes.some(r => r.id === recipe.id)}
+            folders={folders}
+          />
+        ))
+      ) : (
+        <p>No recipes found.</p>
+      )}
     </main>
   );
 }
+
 
 function App() {
   const [folders, setFolders] = useState([
@@ -61,6 +70,7 @@ function App() {
   
   const [likedRecipes, setLikedRecipes] = useState([]);
   const [selectedFolderId, setSelectedFolderId] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const handleLike = (recipe) => {
     setLikedRecipes(prev => {
@@ -97,11 +107,25 @@ function App() {
       });
     });
   };
+  const handleDeleteRecipeFromFolder = (recipeId, folderId) => {
+  setFolders(prev => {
+    return prev.map(folder => {
+      if (folder.id === folderId) {
+        const updatedRecipes = folder.recipes.filter(r => r.id !== recipeId);
+        return { ...folder, recipes: updatedRecipes };
+      }
+      return folder;
+      });
+    });
+  if (folderId === 1) {
+      setLikedRecipes(prev => prev.filter(r => r.id !== recipeId));
+    }
+  };
 
   return (
     <Router>
       <div className="app-container">
-        <Header />
+        <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         <Routes>
           <Route path="/" 
             element={
@@ -110,6 +134,7 @@ function App() {
                 onSave={handleSave} 
                 likedRecipes={likedRecipes} 
                 folders={folders} 
+                searchTerm={searchTerm} 
                 />
               } 
             />
@@ -123,6 +148,7 @@ function App() {
                 onLike={handleLike}
                 onSave={handleSave}
                 likedRecipes={likedRecipes} 
+                onDeleteRecipe={handleDeleteRecipeFromFolder}
               />
             } 
           />

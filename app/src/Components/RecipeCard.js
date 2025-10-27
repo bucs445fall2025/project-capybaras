@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom'; 
 import '../Styles/RecipeCard.css'; 
 
-function RecipeCard({ recipe, liked = false, onLike, onSave, folders = [] }) {
+function RecipeCard({ recipe, liked = false, onLike, onSave, folders = [], currentFolderId, onDeleteRecipe}) {
   const { id, title, imageUrl } = recipe;
   const recipePath = `/recipe/${id}`;
   const [IsLiked, setIsLiked] = useState(liked);
@@ -19,7 +19,16 @@ function RecipeCard({ recipe, liked = false, onLike, onSave, folders = [] }) {
     onSave && onSave(recipe, folderId);
     setShowDropdown(false);
   };
+  const handleDeleteClick = (e) => {
+    e.preventDefault(); 
+    e.stopPropagation(); 
+    
+    if (onDeleteRecipe && currentFolderId) {
+      onDeleteRecipe(id, currentFolderId);
+    }
+  };
 
+  const isInCollection = currentFolderId != null;
   return (
     <Link to={recipePath} className="recipe-card-link-wrapper">
       <div className="recipe-card">
@@ -63,10 +72,18 @@ function RecipeCard({ recipe, liked = false, onLike, onSave, folders = [] }) {
                 </div>
               )}
             </div>
+            {isInCollection && (
+              <button 
+                className="delete-button" 
+                onClick={handleDeleteClick}
+                title="Remove from this folder"
+              >
+                🗑️
+              </button>
+            )}
           </div>
         </div>
         
-        {/* Recipe Title */}
         <h3 className="recipe-title">
           {title}
         </h3>
