@@ -1,11 +1,155 @@
-const express = require('express');
+import express from 'express';
+import User from './models/user.js';
+import Recipe from './models/recipe.js';
+
 const app = express();
+app.use(express.json());
+
 const PORT = process.env.PORT || 5000;
 
-app.get('/api', (req, res) => {
-  res.json({ message: 'Hello from backend' });
-});
+app.get('/', (req, res) => 
+{
+  res.send('Backend operation is normal' );
+}
+);
 
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
+// GET all recipes
+app.get('/recipes', async (req, res) => 
+{
+  try
+  {
+    const recipes = await Recipe.find();
+    res.json(recipes);
+  }
+  catch(err)
+  {
+    console.error(err);
+    res.status(500).json(
+      {
+        error: 'Failed to fetch recipes'
+      }
+    );
+  }
+}
+);
+
+// GET /recipes/search?name=<name>&filters=<filters>&sortBy=<sort>&order=<type>
+app.get('/recipes/search', async (req, res) =>
+{
+  try
+  {
+    const { name, filters, sortBy = 'relevance', order = 'desc' } = req.query;
+
+    const query = {};
+
+    if(name)
+    {
+      query.$text =
+      {
+        $search: name 
+      };
+    }
+
+    if(filters)
+    {
+      const filtersArray = Array.isArray(filters) ? filters : filters.split(',');
+      query.tags =
+      {
+        $in: filtersArray
+      };
+    }
+
+    const sortDirection = order === 'asc' ? 1 : -1;
+    let sortOptions;
+    if(sortBy === 'relevance' && name)
+    {
+      sortOptions = {
+        score:
+        {
+          $meta: "textScore"
+        }
+      };
+    }
+    else
+    {
+      sortOptions =
+      {
+        [sortBy]: sortDirection
+      };
+    }
+
+    const recipes = await Recipe.find(query, name ?
+      {
+        score:
+        {
+          $meta: "textScore"
+        }
+      } : {}).sort(sortOptions);
+
+    res.json(recipes);
+  }
+  catch(err)
+  {
+    console.error('Error search: ', err);
+    res.status(500).json(
+      {
+        error: 'Failed search'
+      }
+    );
+  }
+}
+);
+
+// POST /recipes/
+app.post('/recipes', async (req, res) => 
+{
+  try
+  {
+    const newRecipe = new Recipe(req.body);
+    const result = await newRecipe.save();
+    res.status(201).json(result);
+  }
+  catch(err)
+  {
+    console.error(err);
+    res.status(500).json(
+      {
+        error: "failed to save recipe"
+      }
+    );
+  }
+}
+);
+
+// DELETE /recipes/<id>
+app.delete('/recipes/:id', async (req, res) =>
+{
+  try
+  {
+    const id = req.params.id;
+    const deleted = await Recipe.findByIdAndDelete(id);
+
+    if(!deleted)
+    {
+      return res.status(404).json(
+        {
+          error: 'Recipe not found'
+        }
+      );
+    }
+    
+    res.json({message: "reciped removed"});
+  }
+  catch(err)
+  {
+    console.error('Error removing recipe: ', err);
+    res.status(500).json({error: 'Failed to remove recipe'});
+  }
+}
+);
+
+app.listen(PORT, () =>
+{
+  console.log(`Server port: ${PORT}`);
+}
+);

@@ -6,7 +6,8 @@ services:
     ports:
       - "5000:5000"
     environment:
-      - MONGO_URI=mongodb://mongo:27017/yourdbname
+      - RECIPES_MONGO_URI=mongodb://mongo:27017/RECIPES_DB
+      - USERS_MONGO_URI=mongodb://mongo:27017/USERS_DB
     depends_on:
       - mongo
 
@@ -21,6 +22,7 @@ services:
 
   mongo:
     image: mongo:latest
+    command: ["mongod", "--quiet", "--logpath", "/dev/null"]
     container_name: mongo
     ports:
       - "27017:27017"
