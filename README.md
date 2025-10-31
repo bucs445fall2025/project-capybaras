@@ -2,8 +2,8 @@
 ## CS 445 Final Project
 ### << Semester, Year >>
 
-### Team: << team name >>
-<< List Team Members >>
+### Team: << Capybaras >>
+<< Brian Lu, Michelle Lu, Fatime Useini >>
 
 ## Getting Started
 <<One paragraph of project description goes here>>
@@ -18,7 +18,7 @@ A list of features, function or non-functional, you would like to add in the fut
   >>
   
 ## SRS
-[document](url to google doc)
+[[document](https://docs.google.com/document/d/1wlQoLuu5DjGUnd2ZNeroHECHm59j1fK9UJUbe8aBbJU/edit?usp=sharing)](url to google doc)
   
 ### Prerequisites
 * [Docker](https://www.docker.com/)
