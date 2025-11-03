@@ -8,7 +8,7 @@ const recipeSchema = new mongoose.Schema(
             type: String,
             required: true
         },
-        decription: String,
+        description: String,
         likes:
         {
             type: Number,

@@ -138,12 +138,37 @@ app.delete('/recipes/:id', async (req, res) =>
       );
     }
     
-    res.json({message: "reciped removed"});
+    res.json({message: "recipe removed"});
   }
   catch(err)
   {
     console.error('Error removing recipe: ', err);
     res.status(500).json({error: 'Failed to remove recipe'});
+  }
+}
+);
+
+// Update a recipe by id (e.g. likes count)
+app.put('/recipes/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const updateData = req.body;
+
+    const updatedRecipe = await Recipe.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
+
+    if (!updatedRecipe) {
+      return res.status(404).json(
+        {
+          error: 'Recipe not found'
+        }
+      );
+    }
+
+    res.json(updatedRecipe);
+  }
+  catch(err) {
+    console.error('Error updating recipe: ', err);
+    res.status(500).json({ error: 'Failed to update recipe' });
   }
 }
 );
