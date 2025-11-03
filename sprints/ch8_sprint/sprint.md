@@ -1,41 +1,42 @@
 # Sprint Meeting Notes
 
-**Attended**: Brian Lu, Michelle Lu, Fatime Useini
+**Attended**: Michelle Lu, Fatime Useini, Brian Lu
 
-**DATE**: Monday, October 27th
+**DATE**: November 3, 2025
 
 ***
 
-## Sprint 6 Review
+## Sprint 7 Review
 
 ### SRS Sections Updated
 
-User Interface
+Updated requirements section. 
 
 ### User Story
 
-As a user, I want to save recipes that I like/want to try so I can find it again easier later.
+As a user, I want my liked/saved recipes and folders to be stored in a database so that my data persists between sessions and I can access it anytime.
 
 ### Sprint Requirements Attempted
 
-User 'bookmark' (like) non-persistent functionality using local storage.
+- Permanent Storage
+- Connect to Database 
 
 ### Completed Requirements
 
-User 'bookmark' (like) non-persistent functionality using local storage.
+- Permanent Storage
+- Connect to Database 
 
 ### Incomplete Requirements
 
-n/a
+N/A
 
 ### The summary of the entire project
 
 Creating a recipe website where users can search for, browse, and save recipes in a visually engaging and user-friendly way. The platform allows users to browse a grid of recipe ideas, with images and recipe titles. Additionally, users can save recipes for easy access later and search/filter for specific recipes.
 
-
 ***
 
-## Sprint 7 Planning
+## Sprint 8 Planning
 
 ## Requirements Flex
 
@@ -43,25 +44,27 @@ Creating a recipe website where users can search for, browse, and save recipes i
 
 ## Technical Debt
 
-n/a
+N/A
 
 ### Requirement Target
 
-- Set up backend and mongoDB
+Connect the frontend and backend. 
 
 ### User Stories
 
 As a user, I want my liked/saved recipes and folders to be stored in a database so that my data persists between sessions and I can access it anytime.
+As a user, I want to be able to mark recipes as likes to easily save them into the likes folder. 
 
 ### Planning
 
-Our team will build backend routes and connect them to the database so that recipe data transfers properly between user actions and stored data.
+- Replace dummy recipes in the frontend with API calls to the backend
+- Update frontend components to be able to fetch data from backend server
+- Ensure that actions like liking or saving a recipe trigger API calls to update the backend
 
 ### Action Items
 
-- Set up backend
-- Set up mongoDB
-- Build backend recipe routes
+- Implement API service functions in the frontend
+- Replace dummy recipes with data fetched from the backend
 
 ### Issues and Risks
 
