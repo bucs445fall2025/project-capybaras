@@ -62,7 +62,7 @@ As a user, I want to be able to mark recipes as likes to easily save them into t
 
 ### Action Items
 
-- Build backend folder routes (/folders) with CRUD functionality.
+- Build backend folder routes with CRUD functionality.
 - Implement frontend API service functions for folders (fetch, create, update, delete).
 - Connect frontend save/like actions to update backend data.
 
