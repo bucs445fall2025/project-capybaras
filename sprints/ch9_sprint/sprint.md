@@ -28,8 +28,7 @@ Connected the frontend and backend.
 
 ### Incomplete Requirements
 
-We are able to replace the dummy recipes with recipes saved in the backend. However, folders 
-and the recipes saved into folders are not stored in the database yet. 
+N/A
 
 ### The summary of the entire project
 
@@ -41,11 +40,11 @@ Creating a recipe website where users can search for, browse, and save recipes i
 
 ## Requirements Flex
 
-4/5 requirement flexes remaining
+5/5 requirement flexes remaining
 
 ## Technical Debt
 
-Folders and recipes saved into folders are not stored in database. 
+N/A
 
 ### Requirement Target
 
