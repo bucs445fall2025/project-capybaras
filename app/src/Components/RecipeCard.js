@@ -1,16 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'; 
 import '../Styles/RecipeCard.css'; 
 
-function RecipeCard({ recipe, liked = false, onLike, onSave, folders = [], currentFolderId, onDeleteRecipe}) {
-  const { id, title, imageUrl } = recipe;
-  const recipePath = `/recipe/${id}`;
-  const [IsLiked, setIsLiked] = useState(liked);
+// function RecipeCard({ recipe, liked = false, onLike, onSave, folders = [], currentFolderId, onDeleteRecipe}) 
+function RecipeCard({ recipe, liked = false, onLike, onSave, folders = []}) {
+  const id = recipe.id || recipe._id;
+  const title = recipe.name || recipe.title || 'Untitled';
+  const imageUrl = recipe.imagePath || recipe.imageUrl || '';
+  const [isLiked, setIsLiked] = useState(liked);
   const [showDropdown, setShowDropdown] = useState(false);
+
+  useEffect(() => {
+    setIsLiked(liked);
+  }, [liked]);
 
   const handleLike = (e) => {
     e.preventDefault();
-    setIsLiked(!IsLiked);
+    setIsLiked(!isLiked);
     onLike && onLike(recipe);
   };
 
@@ -19,18 +25,22 @@ function RecipeCard({ recipe, liked = false, onLike, onSave, folders = [], curre
     onSave && onSave(recipe, folderId);
     setShowDropdown(false);
   };
-  const handleDeleteClick = (e) => {
-    e.preventDefault(); 
-    e.stopPropagation(); 
-    
-    if (onDeleteRecipe && currentFolderId) {
-      onDeleteRecipe(id, currentFolderId);
-    }
-  };
 
-  const isInCollection = currentFolderId != null;
+  const recipePath = `/recipe/${id}`;
+
+  // const handleDeleteClick = (e) => {
+  //   e.preventDefault(); 
+  //   e.stopPropagation(); 
+    
+  //   if (onDeleteRecipe && currentFolderId) {
+  //     onDeleteRecipe(id, currentFolderId);
+  //   }
+  // };
+
+  // const isInCollection = currentFolderId != null;
+
   return (
-    <Link to={recipePath} className="recipe-card-link-wrapper">
+    <Link to={recipePath} className="recipe-card-link-wrapper" onClick={(e)=>{ /* link still works */ }}>
       <div className="recipe-card">
         <div className="image-container">
           <img 
@@ -42,7 +52,7 @@ function RecipeCard({ recipe, liked = false, onLike, onSave, folders = [], curre
           {/* buttons */}
           <div className="recipe-card-actions">
             <button
-              className={`like-button ${liked ? 'liked' : ''}`}
+              className={`like-button ${isLiked ? 'liked' : ''}`}
               onClick={handleLike}
             >
               ❤️
@@ -53,6 +63,7 @@ function RecipeCard({ recipe, liked = false, onLike, onSave, folders = [], curre
                 className="save-button"
                 onClick={(e) => {
                   e.preventDefault();
+                  e.stopPropagation();
                   setShowDropdown(!showDropdown);
                 }}
               >
@@ -72,7 +83,7 @@ function RecipeCard({ recipe, liked = false, onLike, onSave, folders = [], curre
                 </div>
               )}
             </div>
-            {isInCollection && (
+            {/* {isInCollection && (
               <button 
                 className="delete-button" 
                 onClick={handleDeleteClick}
@@ -80,7 +91,7 @@ function RecipeCard({ recipe, liked = false, onLike, onSave, folders = [], curre
               >
                 🗑️
               </button>
-            )}
+            )} */}
           </div>
         </div>
         
