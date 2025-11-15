@@ -3,10 +3,46 @@ import usersDB from '../db/userdb.js';
 
 const userSchema = new mongoose.Schema(
     {
-        username: String,
-        created: String,
-        favorites: [String],
-        collections: [String]
+        username:
+        {
+            type: String,
+            required: true,
+            unique: true
+        },
+        joined: 
+        {
+            type: Date,
+            default: Date.now
+        },
+        created: [
+            {
+                type: mongoose.Schema.Types.ObjectId, ref: 'Recipe'
+            }
+        ],
+        saves: [
+            {
+                type: mongoose.Schema.Types.ObjectId, ref: 'Recipe'
+            }
+        ],
+        collections: [
+            {
+                name:
+                {
+                    type: String,
+                    required: true
+                },
+                description:
+                {
+                    type: String,
+                    default: ''
+                },
+                recipes: [
+                    {
+                        type: mongoose.Schema.Types.ObjectId, ref: 'Recipe'
+                    }
+                ]
+            }
+        ]
     }
 );
 
