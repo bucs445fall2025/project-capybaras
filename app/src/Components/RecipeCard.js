@@ -5,7 +5,7 @@ import '../Styles/RecipeCard.css';
 function RecipeCard({ recipe, liked = false, onLike, onSave, folders = []}) {
   const id = recipe.id || recipe._id;
   const title = recipe.name || recipe.title || 'Untitled';
-  const imageUrl = recipe.imagePath || recipe.imageUrl || '';
+  const imageUrl = recipe.imagePath || recipe.imageUrl || recipe.image;
   const [isLiked, setIsLiked] = useState(liked);
   const [showDropdown, setShowDropdown] = useState(false);
 
