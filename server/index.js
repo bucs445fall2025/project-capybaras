@@ -1,12 +1,16 @@
-import express from 'express';
+import axios from 'axios';
 import cors from 'cors';
+import dotenv from 'dotenv';
+import express from 'express';
 import User from './models/user.js';
 import Recipe from './models/recipe.js';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+dotenv.config();
 
+const SPOON_KEY = process.env.SPOON_KEY;  // Spoonacular API key
 const PORT = process.env.PORT || 5000;
 
 app.get('/', (req, res) => 
@@ -14,6 +18,28 @@ app.get('/', (req, res) =>
   res.send('Backend operation is normal' );
 }
 );
+
+
+// external recipe api routes
+app.get('/api/external/search', async (req, res) => {
+  try {
+    const query = req.query.query;
+    if (!query) {
+      return res.status(400).json({ error: "Missing ?query=" });
+    }
+
+    const apiUrl = `https://api.spoonacular.com/recipes/complexSearch?query=${encodeURIComponent(query)}&number=20&addRecipeInformation=true&apiKey=${SPOON_KEY}`;
+
+    const response = await axios.get(apiUrl);
+    res.json(response.data.results); 
+  } 
+  catch (err) {
+    console.error("Spoonacular error:", err.response?.data || err.message);
+    res.status(500).json({ error: "External API request failed" });
+  }
+});
+
+
 // =============================================================================================================
 //                                             RECIPE DATABASE ROUTES
 // =============================================================================================================
@@ -185,10 +211,7 @@ app.delete('/recipes/:id', async (req, res) =>
 // Update a recipe by id (e.g. likes count)
 app.put('/recipes/:id', async (req, res) => {
   try {
-    const id = req.params.id;
-    const updateData = req.body;
-
-    const updatedRecipe = await Recipe.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
+    const updatedRecipe = await Recipe.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
 
     if (!updatedRecipe) {
       return res.status(404).json(
@@ -529,3 +552,8 @@ app.put('/users/:id/collections/:collectionName/edit', async (req, res) =>
   }
 }
 );
+
+
+app.listen(PORT, () => {
+  console.log(`Server port: ${PORT}`);
+});

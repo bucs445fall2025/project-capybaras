@@ -24,10 +24,10 @@ function Header({ searchTerm, setSearchTerm }) {
         <Link to="/" className="header-title">{pageTitle}</Link>
       </div>
 
-      <div className="header-center">
+      {/* <div className="header-center">
         <input type="text" className="search-input" placeholder="Search" value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}/>
-      </div>
+      </div> */}
       
       <div className="header-right">
         {headerButton && (

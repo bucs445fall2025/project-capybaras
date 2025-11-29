@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'; 
 import '../Styles/RecipeCard.css'; 
 
-// function RecipeCard({ recipe, liked = false, onLike, onSave, folders = [], currentFolderId, onDeleteRecipe}) 
 function RecipeCard({ recipe, liked = false, onLike, onSave, folders = []}) {
   const id = recipe.id || recipe._id;
   const title = recipe.name || recipe.title || 'Untitled';
@@ -16,14 +15,18 @@ function RecipeCard({ recipe, liked = false, onLike, onSave, folders = []}) {
 
   const handleLike = (e) => {
     e.preventDefault();
+    e.stopPropagation();
     setIsLiked(!isLiked);
     onLike && onLike(recipe);
   };
 
-  const handleSaveClick = (e, folderId) => {
+  const handleSaveClick = async (e, folderId) => {
     e.preventDefault();
-    onSave && onSave(recipe, folderId);
-    setShowDropdown(false);
+    e.stopPropagation();
+    if (onSave) {
+      await onSave(recipe, folderId); 
+      setShowDropdown(false);
+    }
   };
 
   const recipePath = `/recipe/${id}`;
@@ -54,6 +57,7 @@ function RecipeCard({ recipe, liked = false, onLike, onSave, folders = []}) {
             <button
               className={`like-button ${isLiked ? 'liked' : ''}`}
               onClick={handleLike}
+              title={isLiked ? "Unlike" : "Like"}
             >
               ❤️
             </button>
@@ -66,11 +70,12 @@ function RecipeCard({ recipe, liked = false, onLike, onSave, folders = []}) {
                   e.stopPropagation();
                   setShowDropdown(!showDropdown);
                 }}
+                title="Save to folder"
               >
                 🏷️
               </button>
 
-              {showDropdown && (
+              {showDropdown && folders.length > 0 && (
                 <div className="save-dropdown">
                   {folders.map(folder => (
                     <button

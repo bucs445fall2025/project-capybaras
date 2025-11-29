@@ -4,8 +4,9 @@ import Header from './Components/Header';
 import RecipeCard from './Components/RecipeCard'; 
 import Collections from './Pages/Collections';
 import RecipeDetailPage from './Pages/RecipeDetails';
+import SearchBar from './Components/SearchBar';
 import './Styles/App.css'; 
-import { fetchRecipes, updateRecipe } from './api';
+import { fetchRecipes, updateRecipe, searchExternalRecipes } from './api';
 
 // // Dummy data array for recipes
 // const DUMMY_RECIPES = [
@@ -59,12 +60,7 @@ function HomePage({ onLike, onSave, likedRecipeIds, folders, recipes }) {
 
 function App() {
   const [recipes, setRecipes] = useState([]);
-  const [folders, setFolders] = useState([
-    { id: 1, name: 'Likes', recipes: [] },
-    { id: 2, name: 'Quick Meals', recipes: [] },
-    { id: 3, name: 'Italian', recipes: [] },
-  ]);
-  
+  const [folders, setFolders] = useState([ { id: 1, name: 'Likes', recipes: [] }]);
   const [likedRecipeIds, setLikedRecipeIds] = useState([]);
   // const [selectedFolderId, setSelectedFolderId] = useState(1);
   // const [searchTerm, setSearchTerm] = useState('');
@@ -151,6 +147,16 @@ function App() {
     }
   };
 
+  const handleSearch = async (term) => {
+    try {
+      const external = await searchExternalRecipes(term);
+      setRecipes(external);
+    } 
+    catch (err) {
+      console.error('External search failed', err);
+    }
+  };
+
   // const handleDeleteRecipeFromFolder = async (recipeId, folderId) => {
   //   const folder = folders.find(f => f.id === folderId);
   //   if (!folder) {
@@ -185,6 +191,7 @@ function App() {
     <Router>
       <div className="app-container">
         <Header />
+        <SearchBar onSearch={handleSearch} />
         <Routes>
           <Route path="/" 
             element={
