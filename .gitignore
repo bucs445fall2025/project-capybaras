@@ -1,0 +1,11 @@
+app/node_modules/
+server/node_modules/
+
+docker-data/
+mongo_data/
+
+.env
+
+*.log
+
+.DS_Store
