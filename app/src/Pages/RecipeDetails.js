@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom'; 
-import '../Styles/RecipeDetails.css'; 
+import '../Styles/RecipeDetails.css';
+import { fetchRecipes } from '../api';
 
 // Dummy data array for recipes
+/*
 const DUMMY_RECIPES = [
   { id: 1, title: 'Creamy Tuscan Lobster', imageUrl: 'https://www.foodandwine.com/thmb/js1XrL-_jZHQ7k8Z1He_tayQ6SQ=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Creamy-Tuscan-Lobster-Pasta-FT-Recipe-0625-4294969f2a074028a5ea2bef81c79ca8.jpg', 
     description: 'A rich and decadent Italian-inspired pasta dish featuring succulent lobster tails, sun-dried tomatoes, and fresh spinach tossed in a creamy parmesan sauce.',
@@ -30,11 +32,31 @@ const DUMMY_RECIPES = [
   { id: 11, title: '', imageUrl: 'placeholder-11.jpg' },
   { id: 12, title: '', imageUrl: 'placeholder-12.jpg' },
 ];
+*/
 
 function RecipeDetailPage() {
-  const { recipeId } = useParams(); 
+  const { recipeId } = useParams();
+  const [recipe, setRecipe] = useState(null);
   
-  const recipe = DUMMY_RECIPES.find(r => r.id.toString() === recipeId);
+  // const recipe = DUMMY_RECIPES.find(r => r.id.toString() === recipeId);
+
+  useEffect(() =>
+  {
+    async function load()
+    {
+      try
+      {
+        const list = await fetchRecipes();
+        const found = list.find(r => (r._id || r.id).toString() === recipeId.toString());
+        setRecipe(found || null);
+      }
+      catch(err)
+      {
+        console.error('failed to fetch recipe page', err);
+      }
+    }
+    load();
+  }, [recipeId]);
 
   if (!recipe) {
     return (
@@ -50,17 +72,17 @@ function RecipeDetailPage() {
       
       {/* 1. Header and Image */}
       <h1 className="detail-title">
-        {recipe.title}
+        {recipe.name || recipe.title}
       </h1>
       <img 
-        src={recipe.imageUrl} 
+        src={recipe.imagePath || recipe.imageUrl || recipe.image} 
         alt={recipe.title} 
         className="detail-image"
       />
       
       {/* 2. Description and Time Info */}
       <p className="detail-description">
-        {recipe.description}
+        {recipe.description || recipe.image || ''}
       </p>
       
       <div className="detail-meta-box">
@@ -79,6 +101,12 @@ function RecipeDetailPage() {
               <li key={index}>{item}</li>
             ))}
           </ul>
+        </>
+      )}
+      {recipe.instructions && (
+        <>
+          <h3>Instructions</h3>
+          <div dangerouslySetInnerHTML={{__html: recipe.instructions}} />
         </>
       )}
     </div>

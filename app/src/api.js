@@ -1,5 +1,13 @@
+import axios from "axios";
 const BASE_URL = 'http://localhost:5000'; 
 
+const API = axios.create(
+  {
+    baseURL: BASE_URL,
+  }
+);
+
+/*
 export async function fetchRecipes() {
   const response = await fetch(`${BASE_URL}/recipes`);
   
@@ -30,3 +38,126 @@ export async function searchExternalRecipes(query) {
   }
   return response.json();
 }
+*/
+
+export const fetchRecipes = async () =>
+{
+  const res = await API.get("/recipes");
+  return res.data;
+};
+
+// export const getAllRecipes = () => API.get("/recipes");
+
+export const getRandomRecipes = async (limit = 20) => 
+{
+  const res = await API.get("/recipes/random",
+    {
+      params:
+      {
+        limit
+      }
+    }
+  );
+  return res.data;
+};
+
+export const createRecipe = async (data) =>
+{
+  const res = await API.post("/recipes", data);
+  return res.data;
+};
+
+export const updateRecipe = async (id, data) =>
+{
+  const res = await API.put(`/recipes/${id}`, data);
+  return res.data;
+};
+
+export const searchRecipes = async (name, filters, sortBy, order) =>
+{
+  const res = await API.get("/recipes/search",
+    {
+      params:
+      {
+        name, filters, sortBy, order
+      }
+    }
+  );
+  return res.data;
+};
+
+export const searchExternalRecipes = async (query) =>
+{
+  const res = await API.get("/api/external/search",
+    {
+      params:
+      {
+        query
+      }
+    }
+  );
+  return res.data;
+};
+
+export const createUser = async (data) =>
+{
+  const res = await API.post("/users", data);
+  return res.data;
+};
+
+export const getUser = async (id) =>
+{
+  const res = await API.get(`/users/${id}`);
+  return res.data;
+};
+
+export const getUserUsername = async (username) =>
+{
+  const res = await API.get(`/users/username/${username}`);
+  return res.data;
+};
+
+export const saveRecipe = async (userId, recipeId) =>
+{
+  const res = await API.put(`/users/${userId}/saves`,
+    {
+      recipeId
+    }
+  );
+  return res.data;
+};
+
+export const removeSaved = async (userId, recipeId) =>
+{
+  const res = await API.delete(`/users/${userId}/saves`,
+    {
+      data:
+      {
+        recipeId
+      }
+    }
+  );
+  return res.data;
+}
+
+export const createCollection = async (userId, name, description = "") =>
+{
+  const res = await API.post(`/users/${userId}/collections`,
+    {
+      name, description
+    }
+  );
+  return res.data;
+};
+
+export const addToCollection = async (userId, collectionName, recipeId) =>
+{
+  const res = await API.put(`/users/${userId}/collections/${collectionName}`,
+    {
+      recipeId
+    }
+  );
+  return res.data;
+};
+
+export default API

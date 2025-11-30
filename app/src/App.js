@@ -6,7 +6,7 @@ import Collections from './Pages/Collections';
 import RecipeDetailPage from './Pages/RecipeDetails';
 import SearchBar from './Components/SearchBar';
 import './Styles/App.css'; 
-import { fetchRecipes, updateRecipe, searchExternalRecipes } from './api';
+import { fetchRecipes, getRandomRecipes, updateRecipe, searchExternalRecipes, createUser, getUserUsername, saveRecipe, removeSaved, createCollection, addToCollection, getUser} from './api';
 
 // // Dummy data array for recipes
 // const DUMMY_RECIPES = [
@@ -62,18 +62,20 @@ function App() {
   const [recipes, setRecipes] = useState([]);
   const [folders, setFolders] = useState([ { id: 1, name: 'Likes', recipes: [] }]);
   const [likedRecipeIds, setLikedRecipeIds] = useState([]);
+  const [user, setUser] = useState(null);
   // const [selectedFolderId, setSelectedFolderId] = useState(1);
   // const [searchTerm, setSearchTerm] = useState('');
 
-  useEffect(() => {
-    // load recipes from backend
+  useEffect(() => 
+  {
     async function load() {
       try {
-        const data = await fetchRecipes();
+        const data = await getRandomRecipes(20);
         setRecipes(data);
 
-        const liked = data.filter(r => r.likes && r.likes > 0).map(r => r.id || r._id);
-        setLikedRecipeIds(liked);
+        //const liked = data.filter(r => r.likes && r.likes > 0).map(r => r.id || r._id);
+        //setLikedRecipeIds(liked);
+        setLikedRecipeIds([]);
       }
       catch (err) {
         console.error('Failed to load recipes', err);
@@ -82,7 +84,67 @@ function App() {
     load();
   }, []);
 
+  const handleCreateUser = async () =>
+  {
+    try
+    {
+      const username = prompt("Username:");
+      if(!username) return;
+      const created = await createUser(
+        {
+          username
+        }
+      );
+      setUser(created);
+      alert(`created user: ${created.username}`);
+    }
+    catch(err)
+    {
+      console.error("failed to create user", err);
+      if(err.response?.status === 409 || err.message?.includes('already exists'))
+      {
+        alert('User already exists. Use a different username or login.');
+      }
+      else
+      {
+        alert('failed to create user');
+      }
+    }
+  };
+
+  const handleLogin = async (username) =>
+  {
+    try
+    {
+      const user = await getUserUsername(username);
+      setUser(user);
+      alert(`Logged in as: ${user.username}`);
+    }
+    catch(err)
+    {
+      console.error('failed to login', err);
+      console.error('err.response', err.response?.status, err.response?.data);
+      if(err.response?.status === 404)
+      {
+        alert('user not found (404)');
+      }
+      else if(err.message)
+      {
+        alert('Login failed ' + err.message);
+      }
+      else
+      {
+        alert('user not found');
+      }
+    }
+  };
+
   const handleLike = async (recipe) => {
+    if(!user)
+    {
+      alert('Please login first.');
+      return;
+    }
     try {
       const id = recipe.id || recipe._id;
       const currentlyLiked = likedRecipeIds.includes(id);
@@ -94,6 +156,15 @@ function App() {
       setRecipes(prev => prev.map(r => ( (r._id||r.id) === id ? result : r )));
 
       setLikedRecipeIds(prev => currentlyLiked ? prev.filter(x => x !== id) : [...prev, id]);
+
+      if(!currentlyLiked)
+      {
+        await saveRecipe(user._id, id);
+      }
+      else
+      {
+        await removeSaved(user._id, id);
+      }
 
       setFolders(prev => prev.map(f => {
         if (f.id === 1) {
@@ -114,6 +185,12 @@ function App() {
   };
 
   const handleSave = async (recipe, folderId) => {
+    if(!user)
+    {
+      alert('Please login first.')
+      return;
+    }
+
     try {
       const id = recipe.id || recipe._id;
       const folder = folders.find(f => f.id === folderId);
@@ -122,6 +199,16 @@ function App() {
       }
 
       const folderName = folder.name;
+
+      if(folderId === 1)
+      {
+        await saveRecipe(user._id, id);
+      }
+      else
+      {
+        await addToCollection(user._id, folderName, id); // MARKED IMPORTANCE
+      }
+
       const existingTags = Array.isArray(recipe.tags) ? recipe.tags.slice() : [];
       if (existingTags.includes(folderName)) {
         return;
@@ -190,7 +277,10 @@ function App() {
   return (
     <Router>
       <div className="app-container">
-        <Header />
+        <Header 
+          user={user}
+          onCreateUser={handleCreateUser}
+          onLogin={handleLogin}/>
         <SearchBar onSearch={handleSearch} />
         <Routes>
           <Route path="/" 

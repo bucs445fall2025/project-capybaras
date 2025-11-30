@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import recipesDB from '../db/recipedb.js';
+import { recipesDB } from '../db/db.js';
 
-const recipeSchema = new mongoose.Schema(
+export const recipeSchema = new mongoose.Schema(
     {
         name:
         {
@@ -26,13 +26,39 @@ const recipeSchema = new mongoose.Schema(
         },
         restrictions: [String],
         preparationTime: String,
-        cookTime: String
+        cookTime: String,
+        source:
+        {
+            type: String, index: true
+        },
+        sourceId:
+        {
+            type: String, index: true
+        }
     }
 );
 
 recipeSchema.index(
     {
         name: 'text'
+    }
+);
+
+recipeSchema.index(
+    {
+        tags: 1
+    }
+);
+
+recipeSchema.index(
+    {
+        restrictions: 1
+    }
+);
+
+recipeSchema.index(
+    {
+        ingredients: 1
     }
 );
 

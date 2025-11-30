@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import RecipeCard from "../Components/RecipeCard";
-import { fetchRecipes, saveRecipe } from "../api";
+import { fetchRecipes, saveRecipe, searchExternalRecipes } from "../api";
 
 function Search({ userId, folders }) {
   const [query, setQuery] = useState("");
@@ -8,18 +8,32 @@ function Search({ userId, folders }) {
   const [loading, setLoading] = useState(false);
 
   const handleSearch = async (e) => {
-    e.preventDefault();
+    e && e.preventDefault();
     if (!query) return;
     setLoading(true);
-    const results = await fetchRecipes(query);
-    setRecipes(results);
-    setLoading(false);
+    //const results = await fetchRecipes(query);
+    //setRecipes(results);
+    //setLoading(false);
+    try {
+      const results = await searchExternalRecipes(query);
+      setRecipes(results);
+    }
+    catch(err)
+    {
+      console.error(err);
+      setRecipes([]);
+    }
+    finally
+    {
+      setLoading(false);
+    }
   };
 
   const handleSave = async (recipe, folderId) => {
-    const folderName = folders.find(f => f.id === folderId)?.name;
-    await saveRecipe(userId, recipe, folderName);
-    alert(`Saved "${recipe.title}" to folder "${folderName}"`);
+    //const folderName = folders.find(f => f.id === folderId)?.name;
+    //await saveRecipe(userId, recipe, folderName);
+    //alert(`Saved "${recipe.title}" to folder "${folderName}"`);
+    alert('Use the save button on the card to save to a folder.');
   };
 
   return (
@@ -39,13 +53,15 @@ function Search({ userId, folders }) {
       <div className="recipe-grid-container">
         {recipes.map((recipe) => (
           <RecipeCard
-            key={recipe.id}
+            key={recipe.id || recipe._id}
             recipe={{
               id: recipe.id,
-              title: recipe.title,
-              imageUrl: recipe.image,
-              ingredients: recipe.extendedIngredients || [],
-              instructions: recipe.instructions || "",
+              title: recipe.title || recipe.name,
+              name: recipe.name || recipe.title,
+              image: recipe.image || recipe.imageUrl,
+              imageUrl: recipe.imageUrl || recipe.image,
+              ingredients: recipe.extendedIngredients ? recipe.extendedIngredients.map(i => i.originalString || i.name) : (recipe.ingredients || []),
+              instructions: recipe.instructions || recipe.summary || "",
             }}
             onSave={handleSave}
             folders={folders}

@@ -13,6 +13,12 @@ dotenv.config();
 const SPOON_KEY = process.env.SPOON_KEY;  // Spoonacular API key
 const PORT = process.env.PORT || 5000;
 
+app.listen(PORT, () =>
+{
+  console.log(`Server port: ${PORT}`);
+}
+);
+
 app.get('/', (req, res) => 
 {
   res.send('Backend operation is normal' );
@@ -29,9 +35,51 @@ app.get('/api/external/search', async (req, res) => {
     }
 
     const apiUrl = `https://api.spoonacular.com/recipes/complexSearch?query=${encodeURIComponent(query)}&number=20&addRecipeInformation=true&apiKey=${SPOON_KEY}`;
-
     const response = await axios.get(apiUrl);
-    res.json(response.data.results); 
+    const results = response.data?.results || [];
+
+    // Convert + persist results into your Recipe schema
+    // For each external result: return existing DB doc if present, otherwise create and save
+    const saved = await Promise.all(results.map(async (r) => {
+      try {
+        // Normalize external id to string
+        const externalId = String(r.id);
+        const existing = await Recipe.findOne({ source: 'spoonacular', sourceId: externalId }).exec();
+        if (existing) return existing;
+
+        const ingredients = (r.extendedIngredients || []).map(i => i.originalString || i.original || i.name).filter(Boolean);
+
+        // build instructions text if analyzedInstructions present
+        let instructions = '';
+        if (Array.isArray(r.analyzedInstructions) && r.analyzedInstructions.length) {
+          instructions = r.analyzedInstructions
+            .map(section => (section.steps || []).map(s => s.step).join('\n'))
+            .join('\n\n');
+        } else {
+          instructions = r.instructions || '';
+        }
+
+        const newRecipe = new Recipe({
+          name: r.title || 'Untitled',
+          description: r.summary || r.title || '',
+          imagePath: r.image || '',
+          preparationTime: r.readyInMinutes ? `${r.readyInMinutes} min` : undefined,
+          ingredients,
+          instructions,
+          tags: [].concat(r.diets || [], r.cuisines || []),
+          source: 'spoonacular',
+          sourceId: externalId
+        });
+
+        return await newRecipe.save();
+      } catch (innerErr) {
+        console.error('Error importing external recipe', innerErr);
+        return null;
+      }
+    }));
+
+    // filter out any nulls and return saved recipes (populated as DB docs)
+    res.json(saved.filter(Boolean));
   } 
   catch (err) {
     console.error("Spoonacular error:", err.response?.data || err.message);
@@ -64,6 +112,33 @@ app.get('/recipes', async (req, res) =>
 }
 );
 
+app.get("/recipes/random", async(req, res) =>
+{
+  try
+  {
+    const limit = parseInt(req.query.limit) || 10;
+    const randomRecipes = await Recipe.aggregate([
+      {
+        $sample:
+        {
+          size: limit
+        }
+      }
+    ]);
+    res.json(randomRecipes);
+  }
+  catch(err)
+  {
+    console.error(err);
+    res.status(500).json(
+      {
+        error: "failed to fetch random recipes"
+      }
+    );
+  }
+}
+);
+
 // GET /recipes/search?name=<name>&filters=<filters>&sortBy=<sort>&order=<type>
 // Search by name and optionally with filters and sort method
 app.get('/recipes/search', async (req, res) =>
@@ -85,10 +160,23 @@ app.get('/recipes/search', async (req, res) =>
     if(filters)
     {
       const filtersArray = Array.isArray(filters) ? filters : filters.split(',');
-      query.tags =
+      query.$or =[
       {
-        $in: filtersArray
-      };
+        tags: {
+          $in: filtersArray
+        }
+      },
+      {
+        restrictions: {
+          $in: filtersArray
+        }
+      },
+      {
+        ingredients: {
+          $in: filtersArray
+        }
+      }
+    ];
     }
 
     const sortDirection = order === 'asc' ? 1 : -1;
@@ -148,7 +236,7 @@ app.post('/recipes', async (req, res) =>
         {
           $push:
           {
-            created: recipe._id
+            created: result._id
           }
         }
       );
@@ -230,12 +318,6 @@ app.put('/recipes/:id', async (req, res) => {
 }
 );
 
-app.listen(PORT, () =>
-{
-  console.log(`Server port: ${PORT}`);
-}
-);
-
 // ============================================================================================================
 //                                             USER DATABASE ROUTES
 // ============================================================================================================
@@ -247,6 +329,21 @@ app.post('/users', async (req, res) =>
 {
   try
   {
+    const {username} = req.body;
+    const exist = await User.findOne(
+      {
+        username
+      }
+    );
+    if(exist)
+    {
+      return res.status(409).json(
+        {
+          error: 'User already exists'
+        }
+      );
+    }
+
     const user = new User(req.body);
     const result = await user.save();
     res.status(201).json(result);
@@ -297,6 +394,37 @@ app.get('/users/:id', async (req, res) =>
   }
 }
 );
+
+app.get('/users/username/:username', async (req, res) =>
+{
+  try
+  {
+    const { username } = req.params;
+    const user = await User.findOne({ username })
+    .populate('saves')
+    .populate('collections.recipes')
+    .lean()
+    .exec();
+
+    if(!user)
+    {
+      return res.status(404).json(
+        {
+          error: 'User not found'
+        }
+      );
+    }
+    res.json(user);
+  }
+  catch(err)
+  {
+    res.status(500).json(
+      {
+        error: err.message
+      }
+    );
+  }
+})
 
 // PUT /users/:id/saves
 // Adds recipe to saves
@@ -449,7 +577,7 @@ app.delete('/users/:id/collections/:collectionName', async (req, res) =>
   {
     const {recipeId} = req.body;
 
-    const user = User.findOneAndUpdate(
+    const user = await User.findOneAndUpdate(
       {
         _id: req.params.id,
         "collections.name": req.params.collectionName
@@ -552,8 +680,3 @@ app.put('/users/:id/collections/:collectionName/edit', async (req, res) =>
   }
 }
 );
-
-
-app.listen(PORT, () => {
-  console.log(`Server port: ${PORT}`);
-});

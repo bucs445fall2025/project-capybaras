@@ -1,5 +1,9 @@
 import mongoose from 'mongoose';
-import usersDB from '../db/userdb.js';
+import { usersDB } from '../db/db.js';
+import { recipesDB } from '../db/db.js';
+import { recipeSchema } from './recipe.js';
+
+const RecipeOnUserDB = usersDB.model('Recipe', recipeSchema);
 
 const userSchema = new mongoose.Schema(
     {
