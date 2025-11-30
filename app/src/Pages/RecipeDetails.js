@@ -37,6 +37,7 @@ const DUMMY_RECIPES = [
 function RecipeDetailPage() {
   const { recipeId } = useParams();
   const [recipe, setRecipe] = useState(null);
+  const [meta, setMeta] = useState({});
   
   // const recipe = DUMMY_RECIPES.find(r => r.id.toString() === recipeId);
 
@@ -48,7 +49,10 @@ function RecipeDetailPage() {
       {
         const list = await fetchRecipes();
         const found = list.find(r => (r._id || r.id).toString() === recipeId.toString());
-        setRecipe(found || null);
+        if (found) {
+          setRecipe(found);
+          parseMeta(found.description);
+        }
       }
       catch(err)
       {
@@ -57,6 +61,65 @@ function RecipeDetailPage() {
     }
     load();
   }, [recipeId]);
+
+  const parseMeta = (desc) => {
+    if (!desc) {
+      return;
+    }
+
+    const metaObj = {};
+
+    // // total time
+    // const totalTimeRegex = desc.match(/takes roughly (\d+)\s*minutes/i);
+    // if (totalTimeRegex) {
+    //   metaObj.totalTime = `${totalTimeRegex[1]} min`;
+    // }
+
+    // serving size
+    const servingSizeRegex = desc.match(/serves (\d+)/i);
+    if (servingSizeRegex) {
+      metaObj.servings = servingSizeRegex[1];
+    }
+
+    // cost per serving
+    const costPerServingRegex = desc.match(/costs?\s*\$?([\d.]+)/i);
+    if (costPerServingRegex) {
+      metaObj.costPerServing = costPerServingRegex[1];
+    }
+
+    // diets
+    const dietRegex = /(gluten free|dairy free|pescatarian|vegan|vegetarian|lacto ovo vegetarian|paleolithic)/gi;
+    const diets = [...new Set(desc.match(dietRegex))];
+    if (diets.length > 0) {
+      metaObj.diets = diets;
+    }
+
+    // calories
+    const caloriesRegex = desc.match(/(\d+)\s*calories/);
+    if (caloriesRegex) {
+      metaObj.calories = caloriesRegex[1];
+    }
+
+    // protein
+    const proteiRegex = desc.match(/(\d+)g of protein/);
+    if (proteiRegex) {
+      metaObj.protein = proteiRegex[1];
+    }
+
+    // fat
+    const fatRegex = desc.match(/(\d+)g of fat/);
+    if (fatRegex) {
+      metaObj.fat = fatRegex[1];
+    }
+
+    // spoonacular score
+    const scoreRegegx = desc.match(/spoonacular score of (\d+)%/i);
+    if (scoreRegegx) {
+      metaObj.spoonacularScore = scoreRegegx[1];
+    }
+
+    setMeta(metaObj);
+  };
 
   if (!recipe) {
     return (
@@ -67,47 +130,80 @@ function RecipeDetailPage() {
     );
   }
 
+  const {
+    name,
+    imagePath,
+    imageUrl,
+    image,
+    description,
+    totalTime,
+    ingredients,
+    instructions,
+    sourceUrl,
+    sourceName
+  } = recipe;
+
   return (
     <div className="detail-container">
       
-      {/* 1. Header and Image */}
-      <h1 className="detail-title">
-        {recipe.name || recipe.title}
-      </h1>
-      <img 
-        src={recipe.imagePath || recipe.imageUrl || recipe.image} 
-        alt={recipe.title} 
-        className="detail-image"
-      />
-      
-      {/* 2. Description and Time Info */}
-      <p className="detail-description">
-        {recipe.description || recipe.image || ''}
-      </p>
-      
+      {/* Header */}
+      <h1 className="detail-title">{name}</h1>
+
+      {/* image */}
+      {(imagePath || imageUrl || image) && (
+        <img 
+          src={imagePath || imageUrl || image} 
+          alt={name} 
+          className="detail-image"
+        />
+      )}
+
+      {/* meta info */}
       <div className="detail-meta-box">
-        {recipe.prepTime && 
-          <p style={{ margin: 0 }}><strong>⏱️ Prep Time:</strong> {recipe.prepTime}</p>}
-        {recipe.cookTime && 
-          <p style={{ margin: 0 }}><strong>🔥 Cook Time:</strong> {recipe.cookTime}</p>}
+        {/* {meta.totalTime && <p><strong>Total Time:</strong> {meta.totalTime}</p>} */}
+        {meta.servings && <p><strong>Servings:</strong> {meta.servings}</p>}
+        {meta.calories && <p><strong>Calories:</strong> {meta.calories}</p>}
+        {meta.protein && <p><strong>Protein:</strong> {meta.protein}g</p>}
+        {meta.fat && <p><strong>Fat:</strong> {meta.fat}g</p>}
+        {meta.costPerServing && <p><strong>Cost per serving:</strong> ${meta.costPerServing}</p>}
+        {meta.diets && meta.diets.length > 0 && (<p><strong>Diets:</strong> {meta.diets.join(', ')}</p>)}
+        {meta.spoonacularScore && <p><strong>Spoonacular Score:</strong> {meta.spoonacularScore}%</p>}
       </div>
-      
-      {/* 3. Ingredients List */}
-      {recipe.ingredients && recipe.ingredients.length > 0 && (
+
+      {/* description */}
+      {description && (
+        <p className="detail-description" dangerouslySetInnerHTML={{ __html: description }} />
+      )}
+
+      {/* ingredients list */}
+      {ingredients && ingredients.length > 0 && (
         <>
           <h3 className="detail-ingredients-heading">Ingredients</h3>
           <ul className="detail-ingredients-list">
-            {recipe.ingredients.map((item, index) => (
+            {ingredients.map((item, index) => (
               <li key={index}>{item}</li>
             ))}
           </ul>
         </>
       )}
-      {recipe.instructions && (
+
+      {/* instructions section */}
+      {instructions && (
         <>
-          <h3>Instructions</h3>
-          <div dangerouslySetInnerHTML={{__html: recipe.instructions}} />
+          <h3 className="detail-section-title">Instructions</h3>
+          <ol className="detail-instructions-list">
+            {instructions.split(/\n|\. /).filter(Boolean).map((step, index) => (
+              <li key={index}>{step.trim()}</li>
+            ))}
+          </ol>
         </>
+      )}
+
+      {/* source */}
+      {sourceUrl && (
+        <p className="detail-source">
+          Recipe source: <a href={sourceUrl} target="_blank" rel="noopener noreferrer">{sourceName || sourceUrl}</a>
+        </p>
       )}
     </div>
   );
