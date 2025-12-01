@@ -5,42 +5,11 @@ import RecipeCard from './Components/RecipeCard';
 import Collections from './Pages/Collections';
 import RecipeDetailPage from './Pages/RecipeDetails';
 import SearchBar from './Components/SearchBar';
+import MyRecipes from './Pages/MyRecipes';
 import './Styles/App.css'; 
-import { fetchRecipes, getRandomRecipes, updateRecipe, searchExternalRecipes, createUser, getUserUsername, saveRecipe, removeSaved, createCollection, addToCollection, getUser} from './api';
+import { fetchRecipes, getRandomRecipes, updateRecipe, searchExternalRecipes, createUser, getUserUsername, saveRecipe, removeSaved, createCollection, addToCollection, getUser, removeFromCollection, createRecipe } from './api';
 
-// // Dummy data array for recipes
-// const DUMMY_RECIPES = [
-//   { id: 1, title: 'Creamy Tuscan Lobster', imageUrl: 'https://www.foodandwine.com/thmb/js1XrL-_jZHQ7k8Z1He_tayQ6SQ=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Creamy-Tuscan-Lobster-Pasta-FT-Recipe-0625-4294969f2a074028a5ea2bef81c79ca8.jpg', 
-//     description: 'A rich and decadent Italian-inspired pasta dish featuring succulent lobster tails, sun-dried tomatoes, and fresh spinach tossed in a creamy parmesan sauce.',
-//     prepTime: '20 min',
-//     cookTime: '35 min',
-//     ingredients: [
-//       '1 lb Fettuccine',
-//       '2 Lobster tails (or shrimp/chicken)',
-//       '1 cup Heavy cream',
-//       '1/2 cup Grated Parmesan',
-//       '1/2 cup Sun-dried tomatoes',
-//       '2 cups Fresh spinach',
-//       '3 cloves Garlic, minced',
-//     ],
-//   },
-//   { id: 2, title: 'Garlic Shrimp in Tomato Sauce', imageUrl: 'https://www.foodandwine.com/thmb/xOs2w7R_qbW5EhJHs0UFQq-cqug=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Garlic-shrimp-in-tomato-sauce-FT-RECIPE0424-efd976fab22444e69c7f5b469d5aadd3.jpg' },
-//   { id: 3, title: 'Cheesy Rice and Bean Bake', imageUrl: 'https://www.twopeasandtheirpod.com/wp-content/uploads/2024/04/Cheesy-Bean-and-Rice-Skillet-3175.jpg' },
-//   { id: 4, title: '', imageUrl: 'placeholder-4.jpg' },
-//   { id: 5, title: '', imageUrl: 'placeholder-5.jpg' },
-//   { id: 6, title: '', imageUrl: 'placeholder-6.jpg' },
-//   { id: 7, title: '', imageUrl: 'placeholder-7.jpg' },
-//   { id: 8, title: '', imageUrl: 'placeholder-8.jpg' },
-//   { id: 9, title: '', imageUrl: 'placeholder-9.jpg' },
-//   { id: 10, title: '', imageUrl: 'placeholder-10.jpg' },
-//   { id: 11, title: '', imageUrl: 'placeholder-11.jpg' },
-//   { id: 12, title: '', imageUrl: 'placeholder-12.jpg' },
-// ];
-
-function HomePage({ onLike, onSave, likedRecipeIds, folders, recipes }) {
-  // const filteredRecipes = DUMMY_RECIPES.filter(recipe => recipe.title &&
-  //   recipe.title.toLowerCase().includes(searchTerm.toLowerCase())
-  // );
+function HomePage({ user, onLike, onSave, likedRecipeIds, folders, recipes }) {
 
   return (
     <main className="recipe-grid-container">
@@ -66,6 +35,61 @@ function App() {
   // const [selectedFolderId, setSelectedFolderId] = useState(1);
   // const [searchTerm, setSearchTerm] = useState('');
 
+  const loadUser = async (userId = localStorage.getItem("userId")) => 
+  {
+    if (!userId)
+    {
+      return;
+    }
+
+    try {
+      const userData = await getUser(userId);
+      setUser(userData);
+
+      const likesFolder = 
+      {
+        id: 1,
+        name: 'Likes',
+        recipes: (userData.saves || []).map(r => (
+        {
+          ...r,
+          saved: true
+        }))
+      };
+
+      const collections = (userData.collections || []).map((c, idx) => (
+      {
+        id: idx + 2,
+        name: c.name,
+        recipes: (c.recipes || []).map(r => (
+        {
+          ...r,
+          saved: userData.saves.some(s => (s._id || s.id) === (r._id || r.id))
+        }))
+      }));
+
+      setFolders([likesFolder, ...collections]);
+      setLikedRecipeIds((userData.saves || []).map(r => r._id || r.id));
+    }
+    catch (err) 
+    {
+      console.error('Failed to load user', err);
+      localStorage.removeItem("userId");
+      setUser(null);
+      setFolders([
+        { 
+          id: 1, name: 'Likes', recipes: [] 
+        }
+      ]);
+      setLikedRecipeIds([]);
+    }
+  };
+
+  useEffect(() =>
+  {
+    loadUser();
+  }, []);
+
   useEffect(() => 
   {
     async function load() {
@@ -84,19 +108,21 @@ function App() {
     load();
   }, []);
 
-  const handleCreateUser = async () =>
+  const handleCreateUser = async (username) =>
   {
     try
     {
-      const username = prompt("Username:");
-      if(!username) return;
+      if(!username)
+      {
+        return;
+      }
       const created = await createUser(
         {
           username
         }
       );
       setUser(created);
-      alert(`created user: ${created.username}`);
+      localStorage.setItem("userId", created._id);
     }
     catch(err)
     {
@@ -116,28 +142,29 @@ function App() {
   {
     try
     {
+      if(!username)
+      {
+        return;
+      }
       const user = await getUserUsername(username);
+      localStorage.setItem("userId", user._id);
+      const restUser = await getUser(user._id) 
       setUser(user);
-      alert(`Logged in as: ${user.username}`);
+      console.debug('logged in', user.username);
+      await loadUser();
     }
     catch(err)
     {
       console.error('failed to login', err);
-      console.error('err.response', err.response?.status, err.response?.data);
-      if(err.response?.status === 404)
-      {
-        alert('user not found (404)');
-      }
-      else if(err.message)
-      {
-        alert('Login failed ' + err.message);
-      }
-      else
-      {
-        alert('user not found');
-      }
     }
   };
+
+  const handleLogout = async () =>
+  {
+    localStorage.removeItem("userId");
+    setUser(null);
+    await loadUser();
+  }
 
   const handleLike = async (recipe) => {
     if(!user)
@@ -195,6 +222,7 @@ function App() {
       const id = recipe.id || recipe._id;
       const folder = folders.find(f => f.id === folderId);
       if (!folder) {
+        console.error('folder not found:', folderId);
         return;
       }
 
@@ -206,31 +234,29 @@ function App() {
       }
       else
       {
-        await addToCollection(user._id, folderName, id); // MARKED IMPORTANCE
+        await addToCollection(user._id, folderName, id);
       }
 
       const existingTags = Array.isArray(recipe.tags) ? recipe.tags.slice() : [];
-      if (existingTags.includes(folderName)) {
-        return;
+      if (!existingTags.includes(folderName)) {
+        const updatedRecipe = { ...recipe, tags: [...existingTags, folderName] };
+        await updateRecipe(id, updatedRecipe);
       }
-      const updatedRecipe = { ...recipe, tags: [...existingTags, folderName] };
-
-      const result = await updateRecipe(id, updatedRecipe);
-
-      setRecipes(prev => prev.map(r => ( (r._id||r.id) === id ? result : r )));
 
       setFolders(prev => prev.map(f => {
         if (f.id === folderId) {
           const exists = f.recipes.some(rr => (rr._id||rr.id) === id);
           if (!exists) {
-            return { ...f, recipes: [...f.recipes, result] };
+            return { ...f, recipes: [...f.recipes, recipe] };
           }
         }
         return f;
       }));
+      alert(`saved to ${folderName}`);
     }
     catch (err) {
       console.error('Failed to save recipe to folder', err);
+      alert('Failed to save recipe');
     }
   };
 
@@ -244,35 +270,71 @@ function App() {
     }
   };
 
-  // const handleDeleteRecipeFromFolder = async (recipeId, folderId) => {
-  //   const folder = folders.find(f => f.id === folderId);
-  //   if (!folder) {
-  //     return;
-  //   }
+  const handleDeleteRecipeFromFolder = async (recipeId, folderId) => {
+    const folder = folders.find(f => f.id === folderId);
+    if (!folder) {
+      return;
+    }
 
-  //   try {
-  //     await removeRecipeFromFolder(recipeId, folder.name);
+    try
+    {
+      if(folderId === 1)
+      {
+        await removeSaved(user._id, recipeId);
+      }
+      else
+      {
+        await removeFromCollection(user._id, folder.name, recipeId);
+      }
 
-  //     setFolders(prev =>
-  //       prev.map(f => {
-  //       if (f.id === folderId) {
-  //         const updatedRecipes = f.recipes.filter(r => (r._id || r.id) !== recipeId);
-  //         return { ...f, recipes: updatedRecipes };
-  //       }
-  //       return f;
-  //     })
-  //     );
+      setFolders(prev => prev.map(f =>
+      {
+        if(f.id === folderId)
+        {
+          const updatedRecipes = f.recipes.filter(r => (r._id || r.id) !== recipeId);
+          return { ...f, recipes: updatedRecipes };
+        }
+        return f;
+      }
+      ));
 
-  //     if (folderId == 1) {
-  //       setLikedRecipes(prev => prev.filter(id => id !== recipeId));
-  //     }
+      if(folderId === 1)
+      {
+        setLikedRecipeIds(prev => prev.filter(id => id !== recipeId));
+      }
+    }
+    catch(error)
+    {
+      console.error("failed delete recipe from collection", error);
+    }
+  };
 
-  //     setRecipes(prev => prev.map(r => ((r._id || r.id) === recipeId ? updatedRecipe : r)));
-  //   }
-  //   catch (err) {
-  //     console.error('Failed to remove recipe from folder', err);
-  //   }
-  // };
+  const handleRefreshHome = async () =>
+  {
+    try
+    {
+      const data = await getRandomRecipes(20);
+      setRecipes(data);
+    }
+    catch(err)
+    {
+      console.error('failed to refresh homepage', err);
+    }
+  };
+
+  const handleCreateRecipe = async () =>
+  {
+    const recipeData = {
+      name,
+      description,
+      ingredients,
+      instructions,
+      imagePath,
+      authorId: user._id
+    };
+
+    await createRecipe(recipeData);
+  };
 
   return (
     <Router>
@@ -280,7 +342,10 @@ function App() {
         <Header 
           user={user}
           onCreateUser={handleCreateUser}
-          onLogin={handleLogin}/>
+          onLogin={handleLogin}
+          onLogout={handleLogout}
+          onRefresh={handleRefreshHome}
+        />
         <SearchBar onSearch={handleSearch} />
         <Routes>
           <Route path="/" 
@@ -292,12 +357,14 @@ function App() {
                 folders={folders} 
                 // searchTerm={searchTerm} 
                 recipes={recipes}
+                onRefresh={handleRefreshHome}
                 />
               } 
             />
           <Route path="/collections" 
             element={
               <Collections 
+                user={user}
                 folders={folders} 
                 setFolders={setFolders}
                 // selectedFolderId={selectedFolderId}
@@ -305,10 +372,11 @@ function App() {
                 onLike={handleLike}
                 onSave={handleSave}
                 likedRecipeIds={likedRecipeIds} 
-                // onDeleteRecipe={handleDeleteRecipeFromFolder}
+                onDeleteRecipe={handleDeleteRecipeFromFolder}
               />
             } 
           />
+          <Route path="/my-recipes" element={<MyRecipes user={user} />} />
           <Route path="/recipe/:recipeId" element={<RecipeDetailPage />} />
         </Routes>
       </div>

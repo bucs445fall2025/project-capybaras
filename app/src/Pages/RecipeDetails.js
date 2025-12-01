@@ -192,9 +192,17 @@ function RecipeDetailPage() {
         <>
           <h3 className="detail-section-title">Instructions</h3>
           <ol className="detail-instructions-list">
+            {/*
             {instructions.split(/\n|\. /).filter(Boolean).map((step, index) => (
               <li key={index}>{step.trim()}</li>
             ))}
+            */}
+            {(Array.isArray(instructions) ? instructions.join('\n') : instructions || '')
+              .split(/\n|\. /)
+              .filter(Boolean)
+              .map((step, index) => (
+                <li key={index}>{step.trim()}</li>
+              ))}
           </ol>
         </>
       )}

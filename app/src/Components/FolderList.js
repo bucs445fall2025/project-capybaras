@@ -1,38 +1,74 @@
 import React, { useState } from 'react';
+import { createCollection, removeFromCollection, removeSaved, getUser, updateCollectionName, deleteCollection } from '../api';
 import '../Styles/FolderList.css';
 
-function FolderList({ folders, selectedFolderId, setSelectedFolderId, onFoldersChange }) {
+function FolderList({ user, folders, selectedFolderId, setSelectedFolderId, onFoldersChange }) {
   const [showNewFolderInput, setShowNewFolderInput] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
   const [openMenuFolderId, setOpenMenuFolderId] = useState(null);
   const [editingFolderId, setEditingFolderId] = useState(null);
   const [editingFolderName, setEditingFolderName] = useState('');
 
-  // add new folder
-  const handleAddFolder = () => {
-    if (!newFolderName.trim()) {
-        return;
+  const handleAddFolder = async () => 
+  {
+    if(!user?._id)
+    {
+      return;
+    }
+    
+    if (!newFolderName.trim()) 
+    {
+      return;
     }
 
-    const newFolder = { id: Date.now(), name: newFolderName, recipes: [] };
-    onFoldersChange([...folders, newFolder]);
-    setNewFolderName('');
-    setShowNewFolderInput(false);
+    try
+    {
+      const updatedUser = await createCollection(user._id, newFolderName);
+      if(!updatedUser || !updatedUser.collections)
+      {
+        console.error('Invalid user returned from createCollection:', updatedUser);
+        return;
+      }
+
+      const newCollection = updatedUser.collections[updatedUser.collections.length - 1];
+
+      const newFolder = {
+        id: newCollection._id,
+        name: newCollection.name,
+        recipes: newCollection.recipes || []
+      };
+
+      onFoldersChange([...folders, newFolder]);
+      setNewFolderName('');
+      setShowNewFolderInput(false);
+    } 
+    catch(err) 
+    {
+      console.error('Failed to create collection', err);
+      alert('Failed to create collection');
+    }
   };
 
   // delete folder
-  const handleDeleteFolder = (id) => {
-    if (id === 1) {
+  const handleDeleteFolder = async (folder) => {
+    if (folder.id === 1) {
         return alert("Cannot delete 'Likes' folder");
     }
+    try
+    { 
+      await deleteCollection(user._id, folder.name);
+      const updated = folders.filter(f => f.id !== folder.id);
+      onFoldersChange(updated);
 
-    const updated = folders.filter(f => f.id !== id);
-    onFoldersChange(updated);
-
-    if (id === selectedFolderId) {
-        setSelectedFolderId(1);
+      if (folder.id === selectedFolderId) {
+          setSelectedFolderId(1);
+      }
+      setOpenMenuFolderId(null);
     }
-    setOpenMenuFolderId(null);
+    catch(err)
+    {
+      console.error('failed to delete collection', err);
+    }
   };
 
   // edit folder
@@ -43,20 +79,51 @@ function FolderList({ folders, selectedFolderId, setSelectedFolderId, onFoldersC
   };
 
   // save edited folder
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     if (!editingFolderName.trim()) {
         return;
     }
     
-    const updated = folders.map(f => {
-        if (f.id === editingFolderId) {
-            return { ...f, name: editingFolderName };
+    const collToEdit = folders.find(f => f.id === editingFolderId);
+    if(!collToEdit)
+    {
+      return;
+    }
+
+    try
+    {
+      await fetch(`/users/${user._id}/collections/${collToEdit.name}/edit`,
+        {
+          method: 'PUT',
+          headers:
+          {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(
+            {
+              newName: editingFolderName,
+              newDesc: collToEdit.description || ""
+            }
+          )
+        }
+      );
+      const updatedFolders = folders.map(f =>
+      {
+        if(f.id === editingFolderId)
+        {
+          return { ...f, name: editingFolderName};
         }
         return f;
-    });
+      }
+      );
 
-    onFoldersChange(updated);
-    setEditingFolderId(null);
+      onFoldersChange(updatedFolders);
+      setEditingFolderId(null);
+    }
+    catch(err)
+    {
+      console.error('failed to edit collection', err);
+    }
   };
 
   return (
@@ -117,7 +184,7 @@ function FolderList({ folders, selectedFolderId, setSelectedFolderId, onFoldersC
                 {openMenuFolderId === folder.id && (
                   <div className="folder-menu-dropdown">
                     <button onClick={() => handleEditFolder(folder)}>Edit</button>
-                    <button onClick={() => handleDeleteFolder(folder.id)}>Delete</button>
+                    <button onClick={() => handleDeleteFolder(folder)}>Delete</button>
                   </div>
                 )}
               </div>

@@ -2,77 +2,158 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import '../Styles/Header.css';
 
-function Header({ user, onCreateUser, onLogin }) {
+function Header({ user, onCreateUser, onLogin, onLogout, onRefresh }) {
   const location = useLocation();
-  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [showLoginModel, setShowLoginModel] = useState(false);
+  const [loginName, setLoginName] = useState('');
+  const [showSignupModel, setShowSignupModel] = useState(false);
+  const [signupName, setSignupName] = useState('');
 
   const pageTitles = {
     '/': 'Home Feed',
     '/collections': 'Collections',
+    '/my-recipes': 'Your Recipes'
   };
 
   const headerButtons = {
     '/': { text: 'Saved', link: '/collections' },
-    '/collections': { text: 'Home', link: '/' },
+    '/collections': { text: 'Home', link: '/' }
+  };
+
+  const myRecipesButtons = {
+    '/': { text: 'My Recipes', link: '/my-recipes' },
+    '/my-recipes': { text: 'Home', link: '/'}
   };
 
   const pageTitle = pageTitles[location.pathname];
   const headerButton = headerButtons[location.pathname];
+  const myRecipesButton = myRecipesButtons[location.pathname];
 
-  const handleLoginClick = () =>
+  const handleHeaderButtonClick = (e) =>
   {
-    let username = prompt('Login username:');
-    if(!username) {
-      return;
+    if(location.pathname === '/' && headerButton.link === '/')
+    {
+      e.preventDefault();
+      onRefresh && onRefresh();
     }
-
-    username = username.trim();
-    if(!username) {
-      return;
-    }
-
-    onLogin(username);
   };
 
-  return (
-    <header className="header-bar">
-      <div className="header-left">
-        <Link to="/" className="header-title">{pageTitle}</Link>
-      </div>
+  /*
+  const handleLoginClick = () =>
+  {
+    const username = prompt('Login username:');
+    if(username) {
+      onLogin(username);
+    }
+  };
+  */
+    
+  const openLogin = () =>
+  {
+    setLoginName('');
+    setShowLoginModel(true);
+  };
 
-      {/* <div className="header-center">
-        <input type="text" className="search-input" placeholder="Search" value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}/>
-      </div> */}
-      
-      <div className="header-right">
-        {headerButton && (
-          <Link to={headerButton.link} className="header-button">
-            {headerButton.text}
-          </Link>
-        )}
-        {
-          user ? (
-            <div style=
-            {
-              {
-                marginLeft: 16
-              }
-            }>
-              <strong>
-              {
-                user.username
-              }
-              </strong>
-              </div>
+  const submitLogin = () =>
+  {
+    const v = (loginName || '').trim();
+    if(!v)
+    {
+      return;
+    }
+
+    onLogin(v);
+    setShowLoginModel(false);
+  };
+
+  const openSignup = () =>
+  {
+    setSignupName('');
+    setShowSignupModel(true);
+  };
+
+  const submitSignup = () =>
+  {
+    const v = (signupName || '').trim();
+    if(!v)
+    {
+      return;
+    }
+
+    onCreateUser(v);
+    setShowSignupModel(false);
+  }
+
+  return (
+    <>
+      <header className="header-bar">
+        <div className="header-left">
+          {location.pathname === '/' ? (
+            <button onClick={onRefresh} className="header-title" style={{background: 'none', border: 'none', cursor: 'pointer', padding: 0}}>{pageTitle}</button>
           ) : (
-          <div style={{marginLeft:16, display: 'flex', gap: '8px'}}>
-            <button onClick={onCreateUser} className="header-button">Sign Up</button>
-            <button onClick={handleLoginClick} className="header-button">Login</button>
-          </div>
+            <Link to="/" className="header-title">{pageTitle}</Link>
           )}
-      </div>
-    </header>
+        </div>
+        
+        <div className="header-right">
+          {headerButton && (
+              <Link to={headerButton.link} className="header-button">{headerButton.text}</Link>
+          )}
+          {
+            myRecipesButton && (
+              <Link to={myRecipesButton.link} className="header-button">{myRecipesButton.text}</Link>
+            ) 
+          }
+          {
+            user ? (
+              <div style=
+              {
+                {
+                  marginLeft: 16
+                }
+              }>
+                <strong>
+                {
+                  user.username
+                }
+                </strong>
+                <button onClick={onLogout} className="header-button-flat">Logout</button>
+                </div>
+            ) : (
+            <div style={{marginLeft:16, display: 'flex', gap: '8px'}}>
+              <button onClick={openSignup} className="header-button">Sign Up</button>
+              <button onClick={openLogin} className="header-button">Login</button>
+            </div>
+            )}
+        </div>
+      </header>
+
+      {showLoginModel && (
+        <div className='modal-backdrop'>
+          <div className='modal'>
+            <h3>Login</h3>
+            <input autoFocus value={loginName} onChange={(e)=>setLoginName(e.target.value)} placeholder="Enter username"/>
+            <div style={{display:'flex', gap:8, justifyContent:'flex-end', marginTop:12}}>
+              <button onClick={()=>setShowLoginModel(false)}>Cancel</button>
+              <button onClick={submitLogin}>Login</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showSignupModel && (
+        <div className='modal-backdrop'>
+          <div className='modal'>
+            <h3>Sign Up</h3>
+            <input autoFocus value={signupName} onChange={(e)=>setSignupName(e.target.value)} placeholder="Enter username"/>
+            <div style={{display:'flex', gap:8, justifyContent:'flex-end', marginTop:12}}>
+              <button onClick={()=>setShowSignupModel(false)}>Cancel</button>
+              <button onClick={submitSignup}>Sign Up</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

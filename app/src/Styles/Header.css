@@ -65,3 +65,68 @@
 .header-button:hover {
   background-color: #d0d0d0;
 }
+
+.header-button-flat
+{
+  margin-left: 10px;
+  text-decoration: none;
+  color: #333;
+  font-family: 'Playfair Display', serif; 
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.modal-backdrop
+{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal
+{
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  min-width: 280px;
+  max-width: 90%;
+  width: 400px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.modal h3
+{
+  margin: 0;
+  padding: 0;
+}
+
+.modal-actions
+{
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.modal input
+{
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  margin: 0;
+  display: block;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}

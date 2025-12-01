@@ -15,10 +15,13 @@ export const recipeSchema = new mongoose.Schema(
             default: 0
         },
         imagePath: String,
-        author: String,
+        authorId:
+        {
+            type: mongoose.Schema.Types.ObjectId, ref: "User"
+        },
         tags: [String],
         ingredients: [String],
-        instructions: String,
+        instructions: [String],
         creationDate:
         {
             type: Date,

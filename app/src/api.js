@@ -67,6 +67,19 @@ export const createRecipe = async (data) =>
   return res.data;
 };
 
+export const deleteRecipe = async (recipeId, authorId) =>
+{
+  const res = await API.delete(`/recipes/${recipeId}`,
+    {
+      data:
+      {
+        authorId
+      }
+    }
+  );
+  return res.data;
+};
+
 export const updateRecipe = async (id, data) =>
 {
   const res = await API.put(`/recipes/${id}`, data);
@@ -150,11 +163,30 @@ export const createCollection = async (userId, name, description = "") =>
   return res.data;
 };
 
+export const deleteCollection = async(userId, collectionName) =>
+{
+  const res = await API.delete(`/users/${userId}/collections/${collectionName}/delete`);
+  return res.data;
+};
+
 export const addToCollection = async (userId, collectionName, recipeId) =>
 {
   const res = await API.put(`/users/${userId}/collections/${collectionName}`,
     {
       recipeId
+    }
+  );
+  return res.data;
+};
+
+export const removeFromCollection = async (userId, collectionName, recipeId) =>
+{
+  const res = await API.delete(`/users/${userId}/collections/${collectionName}`,
+    {
+      data:
+      {
+        recipeId
+      }
     }
   );
   return res.data;

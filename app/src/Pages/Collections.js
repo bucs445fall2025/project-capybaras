@@ -4,13 +4,14 @@ import FolderList from '../Components/FolderList';
 import '../Styles/Collections.css';
 
 // function Collections({ folders, setFolders, selectedFolderId, setSelectedFolderId, onSave, likedRecipes, onLike, onDeleteRecipe }) {
-function Collections({ folders, setFolders, onSave, likedRecipeIds, onLike }) {
+function Collections({ user, folders, setFolders, onSave, likedRecipeIds, onLike, onDeleteRecipe }) {
   const [selectedFolderId, setSelectedFolderId] = useState(1);
   const selectedFolder = folders.find(f => f.id === selectedFolderId) || { name: '', recipes: [] };
 
   return (
     <div className="collections-page">
       <FolderList
+        user={user}
         folders={folders}
         selectedFolderId={selectedFolderId}
         setSelectedFolderId={setSelectedFolderId}
@@ -29,8 +30,8 @@ function Collections({ folders, setFolders, onSave, likedRecipeIds, onLike }) {
                 liked={likedRecipeIds.includes(recipe.id || recipe._id)}
                 onSave={onSave}
                 onLike={onLike}
-                // currentFolderId={selectedFolderId} 
-                // onDeleteRecipe={onDeleteRecipe}
+                currentFolderId={selectedFolderId} 
+                onDelete={onDeleteRecipe}
               />
             ))}
           </div>

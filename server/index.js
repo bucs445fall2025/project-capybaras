@@ -2,8 +2,8 @@ import axios from 'axios';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
-import User from './models/user.js';
 import Recipe from './models/recipe.js';
+import User from './models/user.js';
 
 const app = express();
 app.use(cors());
@@ -12,12 +12,6 @@ dotenv.config();
 
 const SPOON_KEY = process.env.SPOON_KEY;  // Spoonacular API key
 const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () =>
-{
-  console.log(`Server port: ${PORT}`);
-}
-);
 
 app.get('/', (req, res) => 
 {
@@ -262,35 +256,45 @@ app.delete('/recipes/:id', async (req, res) =>
 {
   try
   {
-    const id = req.params.id;
-    const deleted = await Recipe.findByIdAndDelete(id);
+    const recipe = await Recipe.findById(req.params.id);
 
-    if(!deleted)
+    if(!recipe)
     {
       return res.status(404).json(
         {
-          error: 'Recipe not found'
+          error: "not found"
+        }
+      );
+    }
+    
+    if(recipe.authorId.toString() !== req.body.authorId)
+    {
+      return res.status(403).json(
+        {
+          error: "not authorized"
         }
       );
     }
 
+    await Recipe.findByIdAndUpdate(req.params.id);
+
     await User.updateMany(
       {
-        created: id
+        created: req.params.id
       },
       {
         $pull:
         {
-          created: id
+          created: req.params.id
         }
       }
-    )
+    );
     
     res.json({message: "recipe removed"});
   }
   catch(err)
   {
-    console.error('Error removing recipe: ', err);
+    console.error(err);
     res.status(500).json({error: 'Failed to remove recipe'});
   }
 }
@@ -299,24 +303,33 @@ app.delete('/recipes/:id', async (req, res) =>
 // Update a recipe by id (e.g. likes count)
 app.put('/recipes/:id', async (req, res) => {
   try {
-    const updatedRecipe = await Recipe.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-
-    if (!updatedRecipe) {
+    const recipe = await Recipe.findById(req.params.id);
+    if (!recipe)
+    {
       return res.status(404).json(
-        {
-          error: 'Recipe not found'
-        }
-      );
+      {
+        error: "not found"
+      });
     }
 
-    res.json(updatedRecipe);
-  }
-  catch(err) {
+    const authorFields = ['name','description','ingredients','instructions','imagePath'];
+    const hasAuthorFields = Object.keys(req.body).some(f => authorFields.includes(f));
+    if (hasAuthorFields && recipe.authorId?.toString() !== req.body.authorId)
+    {
+      return res.status(403).json({ error: "not authorized" });
+    }
+
+    const updated = await Recipe.findByIdAndUpdate(req.params.id, req.body,
+    { 
+      new: true
+    });
+    res.json(updated);
+  } catch(err) {
     console.error('Error updating recipe: ', err);
     res.status(500).json({ error: 'Failed to update recipe' });
   }
-}
-);
+});
+
 
 // ============================================================================================================
 //                                             USER DATABASE ROUTES
@@ -360,6 +373,69 @@ app.post('/users', async (req, res) =>
 }
 );
 
+app.get('/users/username/:username', async (req, res) => 
+{
+  try 
+  {
+    const user = await User.findOne(
+    { 
+      username: req.params.username 
+    });
+
+    if (!user) return res.status(404).json(
+    { 
+      error: "User not found" 
+    });
+
+    const createdRecipes = await Recipe.find(
+    { 
+      _id: 
+      { 
+        $in: user.created 
+      } 
+    });
+    const savedRecipes = await Recipe.find(
+    { 
+      _id: 
+      { 
+        $in: user.saves 
+      } 
+    });
+
+    const collections = await Promise.all(
+      user.collections.map(async (col) => 
+      {
+        const recipes = await Recipe.find(
+        {
+          _id: 
+          { 
+            $in: col.recipes 
+          } 
+        });
+        const recipesWithSaved = recipes.map(r => (
+        {
+        ...r.toObject(),
+        saved: user.saves.includes(s => (s._id || s.id).toString() === r._id.toString())
+        }));
+
+        return { ...col.toObject(), recipes: recipesWithSaved };
+      })
+    );
+
+    return res.json({
+      ...user.toObject(),
+      created: createdRecipes.map(r => ({ ...r.toObject(), saved: user.saves.includes(r._id) })),
+      saves: savedRecipes.map(r => ({ ...r.toObject(), saved: true })),
+      collections
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+
 // GET /users/:id
 // Get a users id
 // Can temporarily used for associating user to their account and mainly used to check another users profile
@@ -367,10 +443,7 @@ app.get('/users/:id', async (req, res) =>
 {
   try
   {
-    const user = await User.findById(req.params.id)
-    .populate('created')
-    .populate('saves')
-    .populate('collections.recipes');
+    const user = await User.findById(req.params.id).lean();
 
     if(!user)
     {
@@ -381,7 +454,47 @@ app.get('/users/:id', async (req, res) =>
       );
     }
 
-    res.json(user);
+    const createdRecipes = await Recipe.find(
+      {
+        _id:
+        {
+          $in: user.created
+        }
+      }
+    );
+
+    const savedRecipes = await Recipe.find(
+      {
+        _id:
+        {
+          $in: user.saves
+        }
+      }
+    );
+
+    const collections = await Promise.all(
+      user.collections.map(async (col) =>
+      {
+        const recipes = await Recipe.find(
+          {
+            _id:
+            {
+              $in: col.recipes
+            }
+          }
+        );
+        return { ...col, recipes };
+      })
+    );
+
+    res.json(
+      {
+        ...user,
+        created: createdRecipes,
+        saves: savedRecipes,
+        collections
+      }
+    );
   }
   catch(err)
   {
@@ -394,37 +507,6 @@ app.get('/users/:id', async (req, res) =>
   }
 }
 );
-
-app.get('/users/username/:username', async (req, res) =>
-{
-  try
-  {
-    const { username } = req.params;
-    const user = await User.findOne({ username })
-    .populate('saves')
-    .populate('collections.recipes')
-    .lean()
-    .exec();
-
-    if(!user)
-    {
-      return res.status(404).json(
-        {
-          error: 'User not found'
-        }
-      );
-    }
-    res.json(user);
-  }
-  catch(err)
-  {
-    res.status(500).json(
-      {
-        error: err.message
-      }
-    );
-  }
-})
 
 // PUT /users/:id/saves
 // Adds recipe to saves
@@ -678,5 +760,11 @@ app.put('/users/:id/collections/:collectionName/edit', async (req, res) =>
       }
     );
   }
+}
+);
+
+app.listen(PORT, () =>
+{
+  console.log(`Server port: ${PORT}`);
 }
 );

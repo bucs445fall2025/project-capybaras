@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'; 
 import '../Styles/RecipeCard.css'; 
 
-function RecipeCard({ recipe, liked = false, onLike, onSave, folders = []}) {
+function RecipeCard({ recipe, liked = false, onLike, onSave, folders = [], onDelete, currentFolderId }) {
   const id = recipe.id || recipe._id;
   const title = recipe.name || recipe.title || 'Untitled';
   const imageUrl = recipe.imagePath || recipe.imageUrl || recipe.image;
@@ -29,18 +29,16 @@ function RecipeCard({ recipe, liked = false, onLike, onSave, folders = []}) {
     }
   };
 
-  const recipePath = `/recipe/${id}`;
+   const handleDeleteClick = (e) => {
+     e.preventDefault(); 
+     e.stopPropagation(); 
+     if (onDelete && currentFolderId) {
+      onDelete(id, currentFolderId);
+     }
+   };
 
-  // const handleDeleteClick = (e) => {
-  //   e.preventDefault(); 
-  //   e.stopPropagation(); 
-    
-  //   if (onDeleteRecipe && currentFolderId) {
-  //     onDeleteRecipe(id, currentFolderId);
-  //   }
-  // };
-
-  // const isInCollection = currentFolderId != null;
+   const isInCollection = currentFolderId != null;
+   const recipePath = `/recipe/${id}`;
 
   return (
     <Link to={recipePath} className="recipe-card-link-wrapper" onClick={(e)=>{ /* link still works */ }}>
@@ -52,7 +50,6 @@ function RecipeCard({ recipe, liked = false, onLike, onSave, folders = []}) {
             className="recipe-image" 
           />
 
-          {/* buttons */}
           <div className="recipe-card-actions">
             <button
               className={`like-button ${isLiked ? 'liked' : ''}`}
@@ -88,7 +85,7 @@ function RecipeCard({ recipe, liked = false, onLike, onSave, folders = []}) {
                 </div>
               )}
             </div>
-            {/* {isInCollection && (
+             {isInCollection && (
               <button 
                 className="delete-button" 
                 onClick={handleDeleteClick}
@@ -96,7 +93,7 @@ function RecipeCard({ recipe, liked = false, onLike, onSave, folders = []}) {
               >
                 🗑️
               </button>
-            )} */}
+            )}
           </div>
         </div>
         
