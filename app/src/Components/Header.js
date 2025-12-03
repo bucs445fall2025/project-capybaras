@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import '../Styles/Header.css';
 
@@ -12,7 +12,8 @@ function Header({ user, onCreateUser, onLogin, onLogout, onRefresh }) {
   const pageTitles = {
     '/': 'Home Feed',
     '/collections': 'Collections',
-    '/my-recipes': 'Your Recipes'
+    '/my-recipes': 'Your Recipes',
+    '/search': 'Search'
   };
 
   const headerButtons = {
@@ -25,29 +26,25 @@ function Header({ user, onCreateUser, onLogin, onLogout, onRefresh }) {
     '/my-recipes': { text: 'Home', link: '/'}
   };
 
+  const searchHomeButtons = {
+    '/search': { text: 'Home', link: '/'}
+  };
+  
   const pageTitle = pageTitles[location.pathname];
   const headerButton = headerButtons[location.pathname];
   const myRecipesButton = myRecipesButtons[location.pathname];
+  const searchHomeButton = searchHomeButtons[location.pathname];
 
   const handleHeaderButtonClick = (e) =>
   {
-    if(location.pathname === '/' && headerButton.link === '/')
+    const pageChange = headerButton?.link === '/' || myRecipesButton?.link === '/' || headerButton?.link === '/collections' || myRecipesButton?.link ==='/my-recipes';
+
+    if(pageChange)
     {
-      e.preventDefault();
-      onRefresh && onRefresh();
+      onRefresh && onRefresh()
     }
   };
 
-  /*
-  const handleLoginClick = () =>
-  {
-    const username = prompt('Login username:');
-    if(username) {
-      onLogin(username);
-    }
-  };
-  */
-    
   const openLogin = () =>
   {
     setLoginName('');
@@ -97,12 +94,17 @@ function Header({ user, onCreateUser, onLogin, onLogout, onRefresh }) {
         
         <div className="header-right">
           {headerButton && (
-              <Link to={headerButton.link} className="header-button">{headerButton.text}</Link>
+              <Link to={headerButton.link} className="header-button" onClick={handleHeaderButtonClick}>{headerButton.text}</Link>
           )}
           {
             myRecipesButton && (
-              <Link to={myRecipesButton.link} className="header-button">{myRecipesButton.text}</Link>
+              <Link to={myRecipesButton.link} className="header-button" onClick={handleHeaderButtonClick}>{myRecipesButton.text}</Link>
             ) 
+          }
+          {
+            searchHomeButton && (
+              <Link to={searchHomeButton.link} className="header-button" onClick={handleHeaderButtonClick}>{searchHomeButton.text}</Link>
+            )
           }
           {
             user ? (

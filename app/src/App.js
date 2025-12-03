@@ -6,6 +6,7 @@ import Collections from './Pages/Collections';
 import RecipeDetailPage from './Pages/RecipeDetails';
 import SearchBar from './Components/SearchBar';
 import MyRecipes from './Pages/MyRecipes';
+import Search from './Pages/Search';
 import './Styles/App.css'; 
 import { fetchRecipes, getRandomRecipes, updateRecipe, searchExternalRecipes, createUser, getUserUsername, saveRecipe, removeSaved, createCollection, addToCollection, getUser, removeFromCollection, createRecipe } from './api';
 
@@ -34,6 +35,10 @@ function App() {
   const [user, setUser] = useState(null);
   // const [selectedFolderId, setSelectedFolderId] = useState(1);
   // const [searchTerm, setSearchTerm] = useState('');
+  const [showConfig, setShowConfig] = useState(false);
+  const [selectedFilters, setSelectedFilters] = useState([]);
+  const [selectedSort, setSelectedSort] = useState("relevance");
+  const [selectedOrder, setSelectedOrder] = useState('desc');
 
   const loadUser = async (userId = localStorage.getItem("userId")) => 
   {
@@ -259,7 +264,7 @@ function App() {
       alert('Failed to save recipe');
     }
   };
-
+  /*
   const handleSearch = async (term) => {
     try {
       const external = await searchExternalRecipes(term);
@@ -269,7 +274,7 @@ function App() {
       console.error('External search failed', err);
     }
   };
-
+  */
   const handleDeleteRecipeFromFolder = async (recipeId, folderId) => {
     const folder = folders.find(f => f.id === folderId);
     if (!folder) {
@@ -346,7 +351,16 @@ function App() {
           onLogout={handleLogout}
           onRefresh={handleRefreshHome}
         />
-        <SearchBar onSearch={handleSearch} />
+        <SearchBar
+          showConfig={showConfig}
+          setShowConfig={setShowConfig}
+          selectedFilters={selectedFilters}
+          setSelectedFilters={setSelectedFilters}
+          selectedSort={selectedSort}
+          setSelectedSort={setSelectedSort}
+          selectedOrder={selectedOrder}
+          setSelectedOrder={setSelectedOrder}
+        />
         <Routes>
           <Route path="/" 
             element={
@@ -361,6 +375,15 @@ function App() {
                 />
               } 
             />
+          <Route path="/search"
+            element={
+              <Search 
+                folders={folders}
+                selectedFilters={selectedFilters}
+                selectedSort={selectedSort}
+                selectedOrder={selectedOrder}/>
+            }
+           />
           <Route path="/collections" 
             element={
               <Collections 

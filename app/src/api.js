@@ -86,16 +86,19 @@ export const updateRecipe = async (id, data) =>
   return res.data;
 };
 
-export const searchRecipes = async (name, filters, sortBy, order) =>
+export const searchRecipes = async (name, filters = [], sortBy = "relevance", order = "desc") =>
 {
-  const res = await API.get("/recipes/search",
-    {
-      params:
-      {
-        name, filters, sortBy, order
-      }
-    }
-  );
+  const params =
+  {
+    name, sortBy, order
+  };
+
+  if(filters.length > 0)
+  {
+    params.filter = filters.join(",");
+  }
+
+  const res = await API.get("/recipes/search", {params});
   return res.data;
 };
 

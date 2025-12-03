@@ -8,7 +8,7 @@ services:
     environment:
       - RECIPES_MONGO_URI=mongodb://mongo:27017/RECIPES_DB
       - USERS_MONGO_URI=mongodb://mongo:27017/USERS_DB
-      - SPOON_KEY=<your_key>
+      - SPOON_KEY=<your_api_key>
     depends_on:
       - mongo
 

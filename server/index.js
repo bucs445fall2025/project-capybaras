@@ -1,9 +1,12 @@
+import path from 'path';
 import axios from 'axios';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 import Recipe from './models/recipe.js';
 import User from './models/user.js';
+import { fileURLToPath } from 'url';
+import { ppid } from 'process';
 
 const app = express();
 app.use(cors());
@@ -267,7 +270,7 @@ app.delete('/recipes/:id', async (req, res) =>
       );
     }
     
-    if(recipe.authorId.toString() !== req.body.authorId)
+    if(recipe.authorId && recipe.authorId.toString() !== req.body.authorId)
     {
       return res.status(403).json(
         {
@@ -276,16 +279,25 @@ app.delete('/recipes/:id', async (req, res) =>
       );
     }
 
-    await Recipe.findByIdAndUpdate(req.params.id);
+    await Recipe.deleteOne(
+      {
+        _id: req.params.id
+      }
+    );
 
     await User.updateMany(
       {
-        created: req.params.id
+        created: req.params.id,
+        saves: req.params.id,
+        "collections.recipes": req.params.id
+        
       },
       {
         $pull:
         {
-          created: req.params.id
+          created: req.params.id,
+          saves: req.params.id,
+          "collections.$[].recipes": req.params.id
         }
       }
     );
@@ -299,6 +311,29 @@ app.delete('/recipes/:id', async (req, res) =>
   }
 }
 );
+
+// Delete all recipes (not for users)
+app.delete('/recipes', async (req, res) =>
+{
+  try
+  {
+    await Recipe.deleteMany({});
+    res.json(
+      {
+        message: "delete all recipes"
+      }
+    );
+  }
+  catch(err)
+  {
+    console.error(err);
+    res.status(500).json(
+      {
+        error: 'failed to delete all recipes'
+      }
+    );
+  }
+});
 
 // Update a recipe by id (e.g. likes count)
 app.put('/recipes/:id', async (req, res) => {
@@ -762,6 +797,16 @@ app.put('/users/:id/collections/:collectionName/edit', async (req, res) =>
   }
 }
 );
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.use(express.static(path.join(__dirname, 'app/build')));
+
+app.get(/^(?!\/api).*/, (req, res) =>
+{
+  res.sendFile(path.join(__dirname, 'app/build', 'index.html'));
+});
 
 app.listen(PORT, () =>
 {
