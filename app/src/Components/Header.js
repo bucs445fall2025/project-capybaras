@@ -18,7 +18,8 @@ function Header({ user, onCreateUser, onLogin, onLogout, onRefresh }) {
 
   const headerButtons = {
     '/': { text: 'Saved', link: '/collections' },
-    '/collections': { text: 'Home', link: '/' }
+    '/collections': { text: 'Home', link: '/' },
+    '/recipe': { text: 'Home', link: '/' } 
   };
 
   const myRecipesButtons = {
@@ -31,7 +32,10 @@ function Header({ user, onCreateUser, onLogin, onLogout, onRefresh }) {
   };
   
   const pageTitle = pageTitles[location.pathname];
-  const headerButton = headerButtons[location.pathname];
+  let headerButton = headerButtons[location.pathname];
+  if (location.pathname.startsWith('/recipe/')) {
+    headerButton = { text: 'Home', link: '/' };
+  }
   const myRecipesButton = myRecipesButtons[location.pathname];
   const searchHomeButton = searchHomeButtons[location.pathname];
 

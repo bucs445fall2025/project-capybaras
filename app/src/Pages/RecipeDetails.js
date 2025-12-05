@@ -14,7 +14,6 @@ function RecipeDetailPage() {
     window.scrollTo(0, 0);
   }, [recipeId]);
 
-  
   // Load recipe data
   useEffect(() => {
     async function load() {
@@ -64,26 +63,40 @@ function RecipeDetailPage() {
     const metaObj = {};
 
     const servingSizeRegex = desc.match(/serves (\d+)/i);
-    if (servingSizeRegex) metaObj.servings = servingSizeRegex[1];
+    if (servingSizeRegex) {
+      metaObj.servings = servingSizeRegex[1];
+    }
 
     const costPerServingRegex = desc.match(/costs?\s*\$?([\d.]+)/i);
-    if (costPerServingRegex) metaObj.costPerServing = costPerServingRegex[1];
+    if (costPerServingRegex) {
+      metaObj.costPerServing = costPerServingRegex[1];
+    }
 
     const dietRegex = /(gluten free|dairy free|pescatarian|vegan|vegetarian|lacto ovo vegetarian|paleolithic)/gi;
     const diets = desc.match(dietRegex);
-    if (diets) metaObj.diets = [...new Set(diets)];
+    if (diets) {
+      metaObj.diets = [...new Set(diets)];
+    }
 
     const caloriesRegex = desc.match(/(\d+)\s*calories/i);
-    if (caloriesRegex) metaObj.calories = caloriesRegex[1];
+    if (caloriesRegex) {
+      metaObj.calories = caloriesRegex[1];
+    }
 
     const proteinRegex = desc.match(/(\d+)g of protein/i);
-    if (proteinRegex) metaObj.protein = proteinRegex[1];
+    if (proteinRegex) {
+      metaObj.protein = proteinRegex[1];
+    }
 
     const fatRegex = desc.match(/(\d+)g of fat/i);
-    if (fatRegex) metaObj.fat = fatRegex[1];
+    if (fatRegex) {
+      metaObj.fat = fatRegex[1];
+    }
 
     const scoreRegex = desc.match(/spoonacular score of (\d+)%/i);
-    if (scoreRegex) metaObj.spoonacularScore = scoreRegex[1];
+    if (scoreRegex){
+      metaObj.spoonacularScore = scoreRegex[1];
+    }
 
     setMeta(metaObj);
   };
@@ -139,12 +152,12 @@ function RecipeDetailPage() {
           />
 
           <div className="top-meta">
-            {meta.servings && <div className="meta-pill">🍽 {meta.servings} servings</div>}
-            {meta.calories && <div className="meta-pill">🔥 {meta.calories} cal</div>}
-            {meta.protein && <div className="meta-pill">💪 {meta.protein}g protein</div>}
-            {meta.fat && <div className="meta-pill">🥑 {meta.fat}g fat</div>}
-            {meta.costPerServing && <div className="meta-pill">💲 {meta.costPerServing}/serving</div>}
-            {meta.diets && <div className="meta-pill">🌱 {meta.diets.join(", ")}</div>}
+            {meta.servings && <div className="meta-pill">{meta.servings} servings</div>}
+            {meta.calories && <div className="meta-pill">{meta.calories} cal</div>}
+            {meta.protein && <div className="meta-pill">{meta.protein}g protein</div>}
+            {meta.fat && <div className="meta-pill">{meta.fat}g fat</div>}
+            {meta.costPerServing && <div className="meta-pill">{meta.costPerServing}/serving</div>}
+            {meta.diets && <div className="meta-pill">{meta.diets.join(", ")}</div>}
           </div>
         </div>
 
@@ -163,7 +176,6 @@ function RecipeDetailPage() {
             </ul>
           </div>
         )}
-
         {/* INSTRUCTIONS */}
         {normalizedInstructions.length > 0 && (
           <div className="section-card">
