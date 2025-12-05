@@ -34,55 +34,71 @@ app.get('/api/external/search', async (req, res) => {
     const apiUrl = `https://api.spoonacular.com/recipes/complexSearch?query=${encodeURIComponent(query)}&number=20&addRecipeInformation=true&apiKey=${SPOON_KEY}`;
     const response = await axios.get(apiUrl);
     const results = response.data?.results || [];
+    const saved = await Promise.all(
+      results.map(async (r) => {
+        try {
+          const externalId = String(r.id);
 
-    // Convert + persist results into your Recipe schema
-    // For each external result: return existing DB doc if present, otherwise create and save
-    const saved = await Promise.all(results.map(async (r) => {
-      try {
-        // Normalize external id to string
-        const externalId = String(r.id);
-        const existing = await Recipe.findOne({ source: 'spoonacular', sourceId: externalId }).exec();
-        if (existing) return existing;
+          // Check if already in DB
+          const existing = await Recipe.findOne({
+            source: "spoonacular",
+            sourceId: externalId
+          });
+          if (existing) return existing;
 
-        const ingredients = (r.extendedIngredients || []).map(i => i.originalString || i.original || i.name).filter(Boolean);
+          // Fetch full recipe details 
+          const infoUrl = `https://api.spoonacular.com/recipes/${externalId}/information?apiKey=${SPOON_KEY}`;
+          const fullInfo = await axios.get(infoUrl).then(res => res.data);
 
-        // build instructions text if analyzedInstructions present
-        let instructions = '';
-        if (Array.isArray(r.analyzedInstructions) && r.analyzedInstructions.length) {
-          instructions = r.analyzedInstructions
-            .map(section => (section.steps || []).map(s => s.step).join('\n'))
-            .join('\n\n');
-        } else {
-          instructions = r.instructions || '';
+          // INGREDIENTS
+          const ingredients = (fullInfo.extendedIngredients || [])
+            .map(i => i.original)
+            .filter(Boolean);
+
+          // INSTRUCTIONS
+          let instructions = "";
+          if (Array.isArray(fullInfo.analyzedInstructions) && fullInfo.analyzedInstructions.length > 0) {
+            instructions = fullInfo.analyzedInstructions
+              .map(section =>
+                (section.steps || [])
+                  .map(s => s.step)
+                  .join("\n")
+              )
+              .join("\n\n");
+          } else {
+            instructions = fullInfo.instructions || "";
+          }
+
+          const newRecipe = new Recipe({
+            name: fullInfo.title || "Untitled",
+            description: fullInfo.summary || "",
+            imagePath: fullInfo.image || "",
+            preparationTime: fullInfo.readyInMinutes
+              ? `${fullInfo.readyInMinutes} min`
+              : "",
+            ingredients,
+            instructions,
+            tags: [].concat(fullInfo.diets || [], fullInfo.cuisines || []),
+            source: "spoonacular",
+            sourceId: externalId,
+          });
+
+          return await newRecipe.save();
+        } catch (innerErr) {
+          console.error("Error importing external recipe", innerErr);
+          return null;
         }
+      })
+    );
 
-        const newRecipe = new Recipe({
-          name: r.title || 'Untitled',
-          description: r.summary || r.title || '',
-          imagePath: r.image || '',
-          preparationTime: r.readyInMinutes ? `${r.readyInMinutes} min` : undefined,
-          ingredients,
-          instructions,
-          tags: [].concat(r.diets || [], r.cuisines || []),
-          source: 'spoonacular',
-          sourceId: externalId
-        });
-
-        return await newRecipe.save();
-      } catch (innerErr) {
-        console.error('Error importing external recipe', innerErr);
-        return null;
-      }
-    }));
-
-    // filter out any nulls and return saved recipes (populated as DB docs)
     res.json(saved.filter(Boolean));
-  } 
-  catch (err) {
+  } catch (err) {
     console.error("Spoonacular error:", err.response?.data || err.message);
     res.status(500).json({ error: "External API request failed" });
   }
 });
+
+
 
 
 // =============================================================================================================
