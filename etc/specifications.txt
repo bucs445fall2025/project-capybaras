@@ -1,0 +1,65 @@
+How will you use this application?  
+To browse, search, and view recipe inspirations or detailed recipes. Users can also save favorites for easy access later.
+
+Where would the user be located physically when using this application?  
+Can be anywhere with internet.
+
+Where would the results be visible?  
+On a website through a browser. 
+
+When will this application be used?  
+Anytime the user wants:
+* meal ideas
+* cooking instructions
+* nutritional information
+* specific recipe searches
+* saved recipe access
+
+When can the application fail?  
+* When there is no internet connection
+* API or database connection errors
+* Invalid or missing recipe IDs
+
+Who is my user?  
+Anyone who cooks, from beginners to experienced chefs. 
+
+Who will deliver the inputs for the application?  
+Users will deliver inputs through:
+* Search queries
+* Clicking on a recipe
+* Saving or unsaving recipes
+
+Who will receive the outputs of the application?  
+Users will receive: 
+* Recipe results
+* Images, instructions, ingredients
+* Their saved recipe lists
+
+What do I know about this application?  
+* It is a full-stack web app using React and Node.js
+* It displays recipes in a grid layout
+* Uses MongoDB to store recipe data
+* Users can search, browse, and save recipes
+
+What does this application need to do?  
+* Provide recipe search
+* Display recipe cards visually
+* Show detailed recipe information
+* Allow saving/favoriting recipes
+
+What are the components of this application?  
+* Homepage
+* Saved recipes page
+* Recipe detail page
+* Search bar
+* User create recipes page 
+* User create own folders section 
+
+What needs to happen next?  
+Implement the basic setup for starting this project. 
+
+What must happen before the next step?  
+Team meeting to discuss roles and tasks. 
+
+What needs to be tracked?  
+Development progress.
